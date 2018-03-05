@@ -1,6 +1,7 @@
 # Extend ProductApi Module
-[![Build Status](https://travis-ci.org/spryker/ProductApi.svg)](https://travis-ci.org/spryker/ProductApi)
-[![Coverage Status](https://coveralls.io/repos/github/spryker/ProductApi/badge.svg)](https://coveralls.io/github/spryker/ProductApi)
+[![Build Status](https://travis-ci.org/fond-of/spryker-product-api.svg?branch=master)](https://travis-ci.org/fond-of/spryker-product-api)
+[![PHP from Travis config](https://img.shields.io/travis/php-v/symfony/symfony.svg)](https://php.net/)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://packagist.org/packages/fond-of-spryker/product-api)
 
 ProductApi extends the Base Spryker Product Api Module:
  * for the update action uses the SKU of a product instead of the Abstract Product ID 
@@ -12,5 +13,3 @@ ProductApi extends the Base Spryker Product Api Module:
 ```
 composer require fond-of-spryker/product-api
 ```
-
-## Documentation

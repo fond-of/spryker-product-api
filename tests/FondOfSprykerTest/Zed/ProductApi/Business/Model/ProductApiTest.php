@@ -117,29 +117,32 @@ class ProductApiTest extends Unit
         $identifierProduct = "214_123";
         $transferData = [
             "sku" => "214_123",
+            'attributes' => [],
+            'product_concretes' => [],
+            'id_tax_set' => 1,
         ];
 
-        $this->spyProductAbstractQueryMock->expects($this->any())
+        $this->spyProductAbstractQueryMock->expects($this->atLeastOnce())
             ->method('filterBySku')
             ->willReturn($this->spyProductAbstractQueryMock);
 
-        $this->spyProductAbstractQueryMock->expects($this->any())
+        $this->spyProductAbstractQueryMock->expects($this->atLeastOnce())
             ->method('getIdProductAbstract')
             ->willReturn(214);
 
-        $this->spyProductAbstractQueryMock->expects($this->any())
+        $this->spyProductAbstractQueryMock->expects($this->atLeastOnce())
             ->method('findOne')
             ->willReturn($this->spyProductAbstractQueryMock);
 
-        $this->queryContainerMock->expects($this->any())
+        $this->queryContainerMock->expects($this->atLeastOnce())
             ->method('queryFind')
             ->willReturn($this->spyProductAbstractQueryMock);
 
-        $this->apiQueryContainerMock->expects($this->any())
+        $this->apiQueryContainerMock->expects($this->atLeastOnce())
             ->method('createApiItem')
             ->willReturn($this->apiItemTransferMock);
 
-        $this->apiDataTransferMock->expects($this->any())
+        $this->apiDataTransferMock->expects($this->atLeastOnce())
             ->method('getData')
             ->willReturn($transferData);
 
@@ -151,7 +154,7 @@ class ProductApiTest extends Unit
             ->method('fromArray')
             ->willReturn($this->productAbstractTransferMock);
 
-        $this->productFacadeMock->expects($this->any())
+        $this->productFacadeMock->expects($this->atLeastOnce())
             ->method('findProductAbstractById')
             ->willReturn($this->productAbstractTransferMock);
 
@@ -167,5 +170,38 @@ class ProductApiTest extends Unit
         $product = $productApi->update($identifierProduct, $this->apiDataTransferMock);
 
         $this->assertInstanceOf('\Generated\Shared\Transfer\ApiItemTransfer', $product);
+    }
+
+    /**
+     * @return void
+     */
+    public function testUpdateWithoutEntityToUpdate()
+    {
+        $identifierProduct = "214_123";
+
+        $this->spyProductAbstractQueryMock->expects($this->atLeastOnce())
+            ->method('filterBySku')
+            ->willReturn($this->spyProductAbstractQueryMock);
+
+        $this->spyProductAbstractQueryMock->expects($this->atLeastOnce())
+            ->method('findOne')
+            ->willReturn('');
+
+        $this->queryContainerMock->expects($this->atLeastOnce())
+            ->method('queryFind')
+            ->willReturn($this->spyProductAbstractQueryMock);
+
+        $this->expectExceptionMessage('Class \'FondOfSpryker\Zed\ProductApi\Business\Model\EntityNotFoundException');
+
+        $productApi = new ProductApi(
+            $this->apiQueryContainerMock,
+            $this->apiQueryBuilderQueryContainerMock,
+            $this->queryContainerMock,
+            $this->entityMapperMock,
+            $this->transferMapperMock,
+            $this->productFacadeMock
+        );
+
+        $productApi->update($identifierProduct, $this->apiDataTransferMock);
     }
 }

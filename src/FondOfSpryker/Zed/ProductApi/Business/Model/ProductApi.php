@@ -39,22 +39,22 @@ class ProductApi extends BaseProductApi
     }
 
     /**
-     * @param string $identifierProduct
+     * @param string $sku
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
      *
      * @throws \Spryker\Zed\Api\Business\Exception\EntityNotFoundException
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function update($identifierProduct, ApiDataTransfer $apiDataTransfer)
+    public function update($sku, ApiDataTransfer $apiDataTransfer)
     {
         $entityToUpdate = $this->queryContainer
             ->queryFind()
-            ->filterBySku($identifierProduct)
+            ->filterBySku($sku)
             ->findOne();
 
         if (!$entityToUpdate) {
-            throw new EntityNotFoundException(sprintf('Product not found: %s', $identifierProduct));
+            throw new EntityNotFoundException(sprintf('Product not found: %s', $sku));
         }
 
         $data = (array)$apiDataTransfer->getData();
@@ -73,5 +73,23 @@ class ProductApi extends BaseProductApi
         $idProductAbstract = $this->productFacade->saveProduct($productAbstractTransfer, $productConcreteCollection);
         
         return $this->get($idProductAbstract);
+    }
+
+    /**
+     * @param string $skuProductAbstract
+     *
+     * @throws \Spryker\Zed\Api\Business\Exception\EntityNotFoundException
+     *
+     * @return \Generated\Shared\Transfer\ApiItemTransfer
+     */
+    public function getBySku($skuProductAbstract)
+    {
+        $productTransfer = $this->productFacade->findProductAbstractBySku($skuProductAbstract);
+
+        if (!$productTransfer) {
+            throw new EntityNotFoundException(sprintf('Product Abstract not found for sku %s', $skuProductAbstract));
+        }
+        
+        return $this->apiQueryContainer->createApiItem($productTransfer, $productTransfer->getIdProductAbstract());
     }
 }

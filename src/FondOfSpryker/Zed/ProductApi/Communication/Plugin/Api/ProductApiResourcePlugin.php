@@ -12,13 +12,25 @@ use Spryker\Zed\ProductApi\Communication\Plugin\Api\ProductApiResourcePlugin as 
 class ProductApiResourcePlugin extends BaseProductApiResourcePlugin
 {
     /**
-     * @param string $identifierProduct
+     * @param string $sku
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function update($identifierProduct, ApiDataTransfer $apiDataTransfer)
+    public function update($sku, ApiDataTransfer $apiDataTransfer)
     {
-        return $this->getFacade()->updateProduct($identifierProduct, $apiDataTransfer);
+        return $this->getFacade()->updateProduct($sku, $apiDataTransfer);
+    }
+
+    /**
+     * @internal param ApiFilterTransfer $apiFilterTransfer
+     *
+     * @param string $skuProductAbstract
+     *
+     * @return \Generated\Shared\Transfer\ApiItemTransfer
+     */
+    public function get($skuProductAbstract)
+    {
+        return $this->getFacade()->getProductAbstractBySku($skuProductAbstract);
     }
 }

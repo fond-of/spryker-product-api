@@ -15,16 +15,33 @@ class ProductApiFacade extends BaseProductApiFacade
      *
      * @api
      *
-     * @param string $identifierProduct
+     * @param string $sku
      *
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function updateProduct($identifierProduct, ApiDataTransfer $apiDataTransfer)
+    public function updateProduct($sku, ApiDataTransfer $apiDataTransfer)
     {
         return $this->getFactory()
             ->createProductApi()
-            ->update($identifierProduct, $apiDataTransfer);
+            ->update($sku, $apiDataTransfer);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @api
+     *
+     * @param string $sku
+     * @param \Generated\Shared\Transfer\ApiFilterTransfer $apiFilterTransfer
+     *
+     * @return \Generated\Shared\Transfer\ApiItemTransfer
+     */
+    public function getProductAbstractBySku($sku)
+    {
+        return $this->getFactory()
+            ->createProductApi()
+            ->getBySku($sku);
     }
 }

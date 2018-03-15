@@ -43,7 +43,7 @@ class ProductApiResourcePluginTest extends Unit
 
         $this->productApiFacadeMock = $this->getMockBuilder(ProductApiFacade::class)
             ->disableOriginalConstructor()
-            ->setMethods(['updateProduct'])
+            ->setMethods(['getProductAbstractBySku', 'updateProduct'])
             ->getMock();
     }
 
@@ -52,7 +52,7 @@ class ProductApiResourcePluginTest extends Unit
      */
     public function testUpdate()
     {
-        $identifierProduct = '214_123';
+        $skuProductAbstract = '214_123';
 
         $this->productApiFacadeMock->expects($this->atLeastOnce())
             ->method('updateProduct')
@@ -60,7 +60,24 @@ class ProductApiResourcePluginTest extends Unit
 
         $productApiResourcePlugin = new ProductApiResourcePlugin();
         $productApiResourcePlugin->setFacade($this->productApiFacadeMock);
-        $product = $productApiResourcePlugin->update($identifierProduct, $this->apiDataTransferMock);
+        $product = $productApiResourcePlugin->update($skuProductAbstract, $this->apiDataTransferMock);
+
+        $this->assertInstanceOf('\Generated\Shared\Transfer\ApiItemTransfer', $product);
+    }
+
+    /**
+     * @return void
+     */
+    public function testGet()
+    {
+        $this->productApiFacadeMock->expects($this->atLeastOnce())
+            ->method('getProductAbstractBySku')
+            ->willReturn($this->apiItemTransferMock);
+
+        $productApiResourcePlugin = new ProductApiResourcePlugin();
+        $productApiResourcePlugin->setFacade($this->productApiFacadeMock);
+
+        $product = $productApiResourcePlugin->get("SKU");
 
         $this->assertInstanceOf('\Generated\Shared\Transfer\ApiItemTransfer', $product);
     }

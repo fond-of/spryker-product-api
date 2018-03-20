@@ -4,6 +4,7 @@ namespace FondOfSpryker\Zed\ProductApi\Business\Model;
 
 use Generated\Shared\Transfer\ApiDataTransfer;
 use Generated\Shared\Transfer\ProductAbstractTransfer;
+use Generated\Shared\Transfer\ProductConcreteTransfer;
 use Spryker\Zed\ProductApi\Business\Mapper\EntityMapperInterface;
 use Spryker\Zed\ProductApi\Business\Mapper\TransferMapperInterface;
 use Spryker\Zed\ProductApi\Business\Model\ProductApi as BaseProductApi;

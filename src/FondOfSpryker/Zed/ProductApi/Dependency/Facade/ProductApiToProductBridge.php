@@ -2,6 +2,7 @@
 
 namespace FondOfSpryker\Zed\ProductApi\Dependency\Facade;
 
+use Generated\Shared\Transfer\ProductAbstractTransfer;
 use Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductBridge as BaseProductApiToProductBridge;
 
 class ProductApiToProductBridge extends BaseProductApiToProductBridge
@@ -20,6 +21,17 @@ class ProductApiToProductBridge extends BaseProductApiToProductBridge
     }
 
     /**
+     * @param \Generated\Shared\Transfer\ProductAbstractTransfer $productAbstractTransfer
+     * @param array $productConcreteCollection
+     *
+     * @return int
+     */
+    public function addProduct(ProductAbstractTransfer $productAbstractTransfer, array $productConcreteCollection)
+    {
+        return $this->productFacade->addProduct($productAbstractTransfer, $productConcreteCollection);
+    }
+
+    /**
      * @param string $skuProductAbstract
      *
      * @return \Generated\Shared\Transfer\ProductAbstractTransfer|null
@@ -33,5 +45,14 @@ class ProductApiToProductBridge extends BaseProductApiToProductBridge
         }
 
         return $this->productFacade->findProductAbstractById($idProductAbstract);
+    }
+
+    /**
+     * @param int $idAbstractProduct
+     * @return void
+     */
+    public function touchProductAbstract(int $idAbstractProduct)
+    {
+        return $this->productFacade->touchProductAbstract($idAbstractProduct);
     }
 }

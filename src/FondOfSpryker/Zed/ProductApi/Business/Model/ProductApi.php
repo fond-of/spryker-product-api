@@ -40,6 +40,33 @@ class ProductApi extends BaseProductApi
     }
 
     /**
+     * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
+     *
+     * @return \Generated\Shared\Transfer\ApiItemTransfer
+     */
+    public function add(ApiDataTransfer $apiDataTransfer)
+    {
+        $data = (array)$apiDataTransfer->getData();
+
+        $productAbstractTransfer = new ProductAbstractTransfer();
+        $productAbstractTransfer->fromArray($data, true);
+
+        $productConcreteCollection = [];
+        if (!isset($data['product_concretes'])) {
+            $data['product_concretes'] = [];
+        }
+        foreach ($data['product_concretes'] as $productConcrete) {
+            $productConcreteCollection[] = (new ProductConcreteTransfer())->fromArray($productConcrete, true);
+        }
+
+        $idProductAbstract = $this->productFacade->addProduct($productAbstractTransfer, $productConcreteCollection);
+
+        $this->productFacade->touchProductAbstract($idProductAbstract);
+
+        return $this->get($idProductAbstract);
+    }
+
+    /**
      * @param string $sku
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
      *
@@ -72,6 +99,8 @@ class ProductApi extends BaseProductApi
         }
 
         $idProductAbstract = $this->productFacade->saveProduct($productAbstractTransfer, $productConcreteCollection);
+
+        $this->productFacade->touchProductAbstract($idProductAbstract);
         
         return $this->get($idProductAbstract);
     }

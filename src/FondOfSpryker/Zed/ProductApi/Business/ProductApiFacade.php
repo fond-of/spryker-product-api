@@ -15,6 +15,22 @@ class ProductApiFacade extends BaseProductApiFacade
      *
      * @api
      *
+     * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
+     *
+     * @return \Generated\Shared\Transfer\ApiItemTransfer
+     */
+    public function addProduct(ApiDataTransfer $apiDataTransfer)
+    {
+        return $this->getFactory()
+            ->createProductApi()
+            ->add($apiDataTransfer);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @api
+     *
      * @param string $sku
      *
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer

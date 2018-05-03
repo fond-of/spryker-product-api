@@ -119,7 +119,17 @@ class ProductApi extends BaseProductApi
         if (!$productTransfer) {
             throw new EntityNotFoundException(sprintf('Product Abstract not found for sku %s', $skuProductAbstract));
         }
-        
+        $productConcreteCollection = [];
+        $productConcretes = $this->productFacade->getConcreteProductsByAbstractProductId($productTransfer->getIdProductAbstract());
+
+        if (count($productConcretes)) {
+            foreach ($productConcretes as $productConcrete) {
+                $productConcreteCollection[] = $productConcrete->toArray();
+            }
+        }
+
+        $productTransfer->setProductConcretes($productConcreteCollection);
+
         return $this->apiQueryContainer->createApiItem($productTransfer, $productTransfer->getIdProductAbstract());
     }
 }

@@ -48,6 +48,21 @@ class ProductApiToProductBridge extends BaseProductApiToProductBridge
     }
 
     /**
+     * {@inheritdoc}
+     *
+     * @api
+     *
+     * @param int $idProductAbstract
+     *
+     * @return \Generated\Shared\Transfer\ProductConcreteTransfer[]
+     */
+    public function getConcreteProductsByAbstractProductId($idProductAbstract)
+    {
+        return $this->productFacade->getConcreteProductsByAbstractProductId($idProductAbstract);
+    }
+
+
+    /**
      * @param int $idAbstractProduct
      * @return void
      */

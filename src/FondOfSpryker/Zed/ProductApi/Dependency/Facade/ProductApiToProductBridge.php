@@ -3,23 +3,11 @@
 namespace FondOfSpryker\Zed\ProductApi\Dependency\Facade;
 
 use Generated\Shared\Transfer\ProductAbstractTransfer;
-use Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductBridge as BaseProductApiToProductBridge;
 
-class ProductApiToProductBridge extends BaseProductApiToProductBridge
+use Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductBridge as SprykerProductApiToProductBridge;
+
+class ProductApiToProductBridge extends SprykerProductApiToProductBridge implements ProductApiToProductInterface
 {
-    /**
-     * @var \Spryker\Zed\Product\Business\ProductFacadeInterface
-     */
-    protected $productFacade;
-
-    /**
-     * @param \FondOfSpryker\Zed\ProductApi\Business\ProductApiFacade $productFacade
-     */
-    public function __construct($productFacade)
-    {
-        $this->productFacade = $productFacade;
-    }
-
     /**
      * @param \Generated\Shared\Transfer\ProductAbstractTransfer $productAbstractTransfer
      * @param array $productConcreteCollection
@@ -36,7 +24,7 @@ class ProductApiToProductBridge extends BaseProductApiToProductBridge
      *
      * @return \Generated\Shared\Transfer\ProductAbstractTransfer|null
      */
-    public function findProductAbstractBySku($skuProductAbstract)
+    public function findProductAbstractBySku(string $skuProductAbstract): ProductAbstractTransfer
     {
         $idProductAbstract = $this->productFacade->findProductAbstractIdBySku($skuProductAbstract);
 
@@ -56,7 +44,7 @@ class ProductApiToProductBridge extends BaseProductApiToProductBridge
      *
      * @return \Generated\Shared\Transfer\ProductConcreteTransfer[]
      */
-    public function getConcreteProductsByAbstractProductId($idProductAbstract)
+    public function getConcreteProductsByAbstractProductId(int $idProductAbstract): int
     {
         return $this->productFacade->getConcreteProductsByAbstractProductId($idProductAbstract);
     }
@@ -64,10 +52,11 @@ class ProductApiToProductBridge extends BaseProductApiToProductBridge
 
     /**
      * @param int $idAbstractProduct
+     *
      * @return void
      */
-    public function touchProductAbstract(int $idAbstractProduct)
+    public function touchProductAbstract(int $idAbstractProduct): void
     {
-        return $this->productFacade->touchProductAbstract($idAbstractProduct);
+        $this->productFacade->touchProductAbstract($idAbstractProduct);
     }
 }

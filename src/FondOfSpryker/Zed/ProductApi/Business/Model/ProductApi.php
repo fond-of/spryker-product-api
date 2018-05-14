@@ -16,12 +16,17 @@ use Spryker\Zed\ProductApi\Persistence\ProductApiQueryContainerInterface;
 class ProductApi extends BaseProductApi
 {
     /**
+     * @var \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface
+     */
+    protected $productFacade;
+
+    /**
      * @param \Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiInterface $apiQueryContainer
      * @param \Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiQueryBuilderInterface $apiQueryBuilderQueryContainer
      * @param \Spryker\Zed\ProductApi\Persistence\ProductApiQueryContainerInterface $queryContainer
      * @param \Spryker\Zed\ProductApi\Business\Mapper\EntityMapperInterface $entityMapper
      * @param \Spryker\Zed\ProductApi\Business\Mapper\TransferMapperInterface $transferMapper
-     * @param \Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface $productFacade
+     * @param \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface $productFacade
      */
     public function __construct(
         ProductApiToApiInterface $apiQueryContainer,
@@ -31,12 +36,14 @@ class ProductApi extends BaseProductApi
         TransferMapperInterface $transferMapper,
         ProductApiToProductInterface $productFacade
     ) {
-        $this->apiQueryContainer = $apiQueryContainer;
-        $this->apiQueryBuilderQueryContainer = $apiQueryBuilderQueryContainer;
-        $this->queryContainer = $queryContainer;
-        $this->entityMapper = $entityMapper;
-        $this->transferMapper = $transferMapper;
-        $this->productFacade = $productFacade;
+        parent::__construct(
+            $apiQueryContainer,
+            $apiQueryBuilderQueryContainer,
+            $queryContainer,
+            $entityMapper,
+            $transferMapper,
+            $productFacade
+        );
     }
 
     /**
@@ -101,7 +108,7 @@ class ProductApi extends BaseProductApi
         $idProductAbstract = $this->productFacade->saveProduct($productAbstractTransfer, $productConcreteCollection);
 
         $this->productFacade->touchProductAbstract($idProductAbstract);
-        
+
         return $this->get($idProductAbstract);
     }
 

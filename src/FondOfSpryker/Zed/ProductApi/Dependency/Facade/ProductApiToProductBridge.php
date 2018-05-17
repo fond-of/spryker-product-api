@@ -44,7 +44,7 @@ class ProductApiToProductBridge extends SprykerProductApiToProductBridge impleme
      *
      * @return \Generated\Shared\Transfer\ProductConcreteTransfer[]
      */
-    public function getConcreteProductsByAbstractProductId(int $idProductAbstract): int
+    public function getConcreteProductsByAbstractProductId(int $idProductAbstract): array
     {
         return $this->productFacade->getConcreteProductsByAbstractProductId($idProductAbstract);
     }

@@ -27,7 +27,7 @@ interface ProductApiToProductInterface extends SprykerProductApiToProductInterfa
      *
      * @return \Generated\Shared\Transfer\ProductConcreteTransfer[]
      */
-    public function getConcreteProductsByAbstractProductId(int $idProductAbstract): int;
+    public function getConcreteProductsByAbstractProductId(int $idProductAbstract): array;
 
     /**
      * {@inheritdoc}

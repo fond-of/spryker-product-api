@@ -46,13 +46,33 @@ class ProductApiFacadeTest extends Unit
 
         $this->productApiMock = $this->getMockBuilder(ProductApi::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getBySku', 'update'])
+            ->setMethods(['add', 'getBySku', 'update'])
             ->getMock();
 
         $this->productApiBusinessFactoryMock = $this->getMockBuilder(ProductApiBusinessFactory::class)
             ->disableOriginalConstructor()
             ->setMethods(['createProductApi'])
             ->getMock();
+    }
+
+    /**
+     * @return void
+     */
+    public function testAddProduct()
+    {
+        $this->productApiMock->expects($this->atLeastOnce())
+            ->method('add')
+            ->willReturn($this->apiItemTransferMock);
+
+        $this->productApiBusinessFactoryMock->expects($this->atLeastOnce())
+            ->method('createProductApi')
+            ->willReturn($this->productApiMock);
+
+        $productApiFacade = new ProductApiFacade();
+        $productApiFacade->setFactory($this->productApiBusinessFactoryMock);
+        $product = $productApiFacade->addProduct($this->apiDataTransferMock);
+
+        $this->assertInstanceOf('\Generated\Shared\Transfer\ApiItemTransfer', $product);
     }
 
     /**

@@ -11,7 +11,6 @@ use Spryker\Zed\ProductApi\Communication\Plugin\Api\ProductApiResourcePlugin as 
  */
 class ProductApiResourcePlugin extends BaseProductApiResourcePlugin
 {
-
     /**
      * @param string $sku
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer

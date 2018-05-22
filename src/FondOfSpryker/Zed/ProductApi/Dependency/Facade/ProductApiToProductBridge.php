@@ -49,7 +49,6 @@ class ProductApiToProductBridge extends SprykerProductApiToProductBridge impleme
         return $this->productFacade->getConcreteProductsByAbstractProductId($idProductAbstract);
     }
 
-
     /**
      * @param int $idAbstractProduct
      *

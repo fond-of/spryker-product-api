@@ -89,11 +89,11 @@ class ProductApiTest extends Unit
 
         $this->productAbstractTransferMock = $this->getMockBuilder('\Generated\Shared\Transfer\ProductAbstractTransfer')
             ->disableOriginalConstructor()
-            ->setMethods(['setIdProductAbstract', 'fromArray'])
+            ->setMethods(['setIdProductAbstract', 'fromArray', 'setProductConcretes'])
             ->getMock();
 
         $this->productFacadeMock = $this->getMockBuilder(ProductApiToProductInterface::class)
-            ->setMethods(['get', 'findProductAbstractById', 'findProductAbstractBySku', 'addProduct', 'saveProduct'])
+            ->setMethods(['addProduct', 'get', 'getConcreteProductsByAbstractProductId', 'findProductAbstractById', 'findProductAbstractBySku', 'touchProductAbstract', 'saveProduct'])
             ->getMock();
 
         $this->spyProductAbstractQueryMock = $this->getMockBuilder('Orm\Zed\Product\Persistence\SpyProductAbstractQuery')
@@ -107,6 +107,48 @@ class ProductApiTest extends Unit
         $this->queryContainerMock = $this->getMockBuilder(ProductApiQueryContainerInterface::class)
             ->setMethods(['queryFind', 'queryGet', 'queryRemove', 'getConnection'])
             ->getMock();
+    }
+
+    /**
+     * @return void
+     */
+    public function testAdd()
+    {
+        $transferData = [
+            "sku" => "214_123",
+            'attributes' => [],
+            'product_concretes' => [],
+            'id_tax_set' => 1,
+        ];
+
+        $this->apiDataTransferMock->expects($this->atLeastOnce())
+            ->method('getData')
+            ->willReturn($transferData);
+
+        $this->productFacadeMock->expects($this->atLeastOnce())
+            ->method('addProduct')
+            ->willReturn(1);
+
+        $this->productFacadeMock->expects($this->atLeastOnce())
+            ->method('findProductAbstractById')
+            ->willReturn($this->productAbstractTransferMock);
+
+        $this->apiQueryContainerMock->expects($this->atLeastOnce())
+            ->method('createApiItem')
+            ->willReturn($this->apiItemTransferMock);
+
+        $productApi = new ProductApi(
+            $this->apiQueryContainerMock,
+            $this->apiQueryBuilderQueryContainerMock,
+            $this->queryContainerMock,
+            $this->entityMapperMock,
+            $this->transferMapperMock,
+            $this->productFacadeMock
+        );
+
+        $product = $productApi->add($this->apiDataTransferMock);
+
+        $this->assertInstanceOf('\Generated\Shared\Transfer\ApiItemTransfer', $product);
     }
 
     /**

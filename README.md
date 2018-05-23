@@ -5,6 +5,7 @@
 
 ProductApi extends the Base Spryker Product Api Module:
  * the update and get calls  are using the SKU of a product instead of the Abstract Product ID 
+ * touch Abstract Product on create
 
 
 
@@ -20,6 +21,12 @@ GET /api/rest/products/{sku}
 
 ```
 curl -X GET "http://zed.yourdomain.com/api/rest/products/{sku}" \
+     -H 'Content-Type: application/json' \
+     
+```
+POST /api/rest/products/
+```
+curl -X GET "http://zed.yourdomain.com/api/rest/products/" \
      -H 'Content-Type: application/json' \
      
 ```

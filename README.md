@@ -26,8 +26,34 @@ curl -X GET "http://zed.yourdomain.com/api/rest/products/{sku}" \
 ```
 POST /api/rest/products/
 ```
-curl -X GET "http://zed.yourdomain.com/api/rest/products/" \
+curl -X POST "http://zed.yourdomain.com/api/rest/products/" \
      -H 'Content-Type: application/json' \
+     -d $'{
+           "data": {
+             "sku": "sku",
+             "id_tax_set": 1,
+             "name": "Name",
+             "fk_locale": "en_US",
+             "attributes" : {
+                 "attribute": "value"
+             },
+             "localized_attributes": [
+              {
+               "name": "Name",
+               "description": "Description",
+                "meta_description": "Meta Description",
+                "attributes": {
+                 
+                },
+                "locale": {
+                     "id_locale": 46,
+                     "locale_name": "en_US",
+                     "is_active": true
+                 }
+              }
+             ]       
+           }
+          }'
      
 ```
 

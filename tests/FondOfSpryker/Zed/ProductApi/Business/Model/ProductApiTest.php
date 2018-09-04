@@ -93,7 +93,7 @@ class ProductApiTest extends Unit
             ->getMock();
 
         $this->productFacadeMock = $this->getMockBuilder(ProductApiToProductInterface::class)
-            ->setMethods(['addProduct', 'get', 'getConcreteProductsByAbstractProductId', 'findProductAbstractById', 'findProductAbstractBySku', 'touchProductAbstract', 'saveProduct'])
+            ->setMethods(['addProduct', 'get', 'getConcreteProductsByAbstractProductId', 'findProductAbstractById', 'findProductAbstractIdBySku', 'findProductAbstractBySku', 'touchProductAbstract', 'saveProduct'])
             ->getMock();
 
         $this->spyProductAbstractQueryMock = $this->getMockBuilder('Orm\Zed\Product\Persistence\SpyProductAbstractQuery')
@@ -221,6 +221,10 @@ class ProductApiTest extends Unit
     {
         $sku = "214_123";
 
+        $this->queryContainerMock->expects($this->atLeastOnce())
+            ->method('queryFind')
+            ->willReturn($this->spyProductAbstractQueryMock);
+
         $this->spyProductAbstractQueryMock->expects($this->atLeastOnce())
             ->method('filterBySku')
             ->willReturn($this->spyProductAbstractQueryMock);
@@ -229,11 +233,7 @@ class ProductApiTest extends Unit
             ->method('findOne')
             ->willReturn('');
 
-        $this->queryContainerMock->expects($this->atLeastOnce())
-            ->method('queryFind')
-            ->willReturn($this->spyProductAbstractQueryMock);
-
-        $this->expectExceptionMessage('Class \'FondOfSpryker\Zed\ProductApi\Business\Model\EntityNotFoundException');
+        $this->expectExceptionMessage('Product not found: 214_123');
 
         $productApi = new ProductApi(
             $this->apiQueryContainerMock,
@@ -257,7 +257,11 @@ class ProductApiTest extends Unit
             ->willReturn($this->apiItemTransferMock);
 
         $this->productFacadeMock->expects($this->atLeastOnce())
-            ->method('findProductAbstractBySku')
+            ->method('findProductAbstractIdBySku')
+            ->willReturn(1);
+
+        $this->productFacadeMock->expects($this->atLeastOnce())
+            ->method('findProductAbstractById')
             ->willReturn($this->productAbstractTransferMock);
 
         $productApi = new ProductApi(
@@ -280,10 +284,10 @@ class ProductApiTest extends Unit
     public function testGetBySkuWithoutEntityToUpdate()
     {
         $this->productFacadeMock->expects($this->atLeastOnce())
-            ->method('findProductAbstractBySku')
-            ->willReturn('');
+            ->method('findProductAbstractIdBySku')
+            ->willReturn(null);
 
-        $this->expectExceptionMessage('Class \'FondOfSpryker\Zed\ProductApi\Business\Model\EntityNotFoundException');
+        $this->expectExceptionMessage('Product not found for sku SKU');
 
         $productApi = new ProductApi(
             $this->apiQueryContainerMock,

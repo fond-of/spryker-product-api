@@ -3,8 +3,10 @@
 namespace FondOfSpryker\Zed\ProductApi\Business\Model;
 
 use Generated\Shared\Transfer\ApiDataTransfer;
+use Generated\Shared\Transfer\ApiRequestTransfer;
 use Generated\Shared\Transfer\ProductAbstractTransfer;
 use Generated\Shared\Transfer\ProductConcreteTransfer;
+use Spryker\Zed\Api\Business\Exception\EntityNotFoundException;
 use Spryker\Zed\ProductApi\Business\Mapper\EntityMapperInterface;
 use Spryker\Zed\ProductApi\Business\Mapper\TransferMapperInterface;
 use Spryker\Zed\ProductApi\Business\Model\ProductApi as BaseProductApi;
@@ -113,22 +115,54 @@ class ProductApi extends BaseProductApi
     }
 
     /**
-     * @param string $skuProductAbstract
+     * @param \Generated\Shared\Transfer\ApiRequestTransfer $apiRequestTransfer
+     *
+     * @return \Generated\Shared\Transfer\ApiCollectionTransfer
+     */
+    public function find(ApiRequestTransfer $apiRequestTransfer)
+    {
+        $query = $this->buildQuery($apiRequestTransfer);
+
+        // force limit of -1 if is set
+        $queryData = $apiRequestTransfer->getQueryData();
+
+        if (array_key_exists('limit', $queryData) && $queryData['limit'] == -1) {
+            $query->setOffset(0);
+            $query->setLimit(-1);
+            $apiRequestTransfer->getFilter()->setLimit($query->count());
+        }
+
+        $collection = $this->transferMapper->toTransferCollection(
+            $query->find()->toArray()
+        );
+
+        foreach ($collection as $k => $productApiTransfer) {
+            $collection[$k] = $this->get($productApiTransfer->getIdProductAbstract())->getData();
+        }
+
+        $apiCollectionTransfer = $this->apiQueryContainer->createApiCollection($collection);
+
+        $apiCollectionTransfer = $this->addPagination($query, $apiCollectionTransfer, $apiRequestTransfer);
+
+        return $apiCollectionTransfer;
+    }
+
+    /**
+     * @param int $idProductAbstract
      *
      * @throws \Spryker\Zed\Api\Business\Exception\EntityNotFoundException
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function getBySku($skuProductAbstract)
+    public function get($idProductAbstract)
     {
-        $productTransfer = $this->productFacade->findProductAbstractBySku($skuProductAbstract);
-
+        $productTransfer = $this->productFacade->findProductAbstractById($idProductAbstract);
         if (!$productTransfer) {
-            throw new EntityNotFoundException(sprintf('Product Abstract not found for sku %s', $skuProductAbstract));
+            throw new EntityNotFoundException(sprintf('Product Abstract not found for id %s', $idProductAbstract));
         }
+
         $productConcreteCollection = [];
         $productConcretes = $this->productFacade->getConcreteProductsByAbstractProductId($productTransfer->getIdProductAbstract());
-
         if (count($productConcretes)) {
             foreach ($productConcretes as $productConcrete) {
                 $productConcreteCollection[] = $productConcrete->toArray();
@@ -137,6 +171,24 @@ class ProductApi extends BaseProductApi
 
         $productTransfer->setProductConcretes($productConcreteCollection);
 
-        return $this->apiQueryContainer->createApiItem($productTransfer, $productTransfer->getIdProductAbstract());
+        return $this->apiQueryContainer->createApiItem($productTransfer, $idProductAbstract);
+    }
+
+    /**
+     * @param string $skuProductAbstract
+     *
+     * @throws \Spryker\Zed\Api\Business\Exception\EntityNotFoundException
+     *
+     * @return \Generated\Shared\Transfer\ApiItemTransfer
+     */
+    public function getBySku($skuProductAbstract)
+    {
+        $idProductAbstract = $this->productFacade->findProductAbstractIdBySku($skuProductAbstract);
+
+        if (!$idProductAbstract) {
+            throw new EntityNotFoundException(sprintf('Product not found for sku %s', $skuProductAbstract));
+        }
+
+        return $this->get($idProductAbstract);
     }
 }

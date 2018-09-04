@@ -22,6 +22,16 @@ class ProductApiToProductBridge extends SprykerProductApiToProductBridge impleme
     /**
      * @param string $skuProductAbstract
      *
+     * @return int $idProductAbstract
+     */
+    public function findProductAbstractIdBySku(string $skuProductAbstract)
+    {
+        return $this->productFacade->findProductAbstractIdBySku($skuProductAbstract);
+    }
+
+    /**
+     * @param string $skuProductAbstract
+     *
      * @return \Generated\Shared\Transfer\ProductAbstractTransfer|null
      */
     public function findProductAbstractBySku(string $skuProductAbstract): ProductAbstractTransfer

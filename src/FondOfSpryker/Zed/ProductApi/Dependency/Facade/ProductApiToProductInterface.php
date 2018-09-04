@@ -14,6 +14,17 @@ interface ProductApiToProductInterface extends SprykerProductApiToProductInterfa
      *
      * @param string $skuProductAbstract
      *
+     * @return int $idProductAbstract
+     */
+    public function findProductAbstractIdBySku(string $skuProductAbstract);
+
+    /**
+     * {@inheritdoc}
+     *
+     * @api
+     *
+     * @param string $skuProductAbstract
+     *
      * @return \Generated\Shared\Transfer\ProductAbstractTransfer|null
      */
     public function findProductAbstractBySku(string $skuProductAbstract): ProductAbstractTransfer;

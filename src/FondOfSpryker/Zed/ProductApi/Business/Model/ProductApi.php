@@ -137,7 +137,11 @@ class ProductApi extends BaseProductApi
         );
 
         foreach ($collection as $k => $productApiTransfer) {
-            $collection[$k] = $this->get($productApiTransfer->getIdProductAbstract())->getData();
+            if (array_key_exists('fields', $queryData) && !empty($queryData['fields'])) {
+                $collection[$k] = $productApiTransfer->toArray();
+            } else {
+                $collection[$k] = $this->get($productApiTransfer->getIdProductAbstract())->getData();
+            }
         }
 
         $apiCollectionTransfer = $this->apiQueryContainer->createApiCollection($collection);

@@ -15,6 +15,13 @@ ProductApi extends the Base Spryker Product Api Module:
 composer require fond-of-spryker/product-api
 ```
 
+use rewritten "ProductApiResourcePlugin" class in Pyz ApiDenpendencyProvider
+```
+use FondOfSpryker\Zed\ProductApi\Communication\Plugin\Api\ProductApiResourcePlugin;
+```
+
+
+
 ## API
 
 GET /api/rest/products/{sku}

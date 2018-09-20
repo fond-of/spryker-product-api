@@ -19,6 +19,7 @@ use rewritten "ProductApiResourcePlugin" class in Pyz ApiDenpendencyProvider
 ```
 use FondOfSpryker\Zed\ProductApi\Communication\Plugin\Api\ProductApiResourcePlugin;
 ```
+instead of "use Spryker\Zed\Api\ApiDependencyProvider as SprykerApiDependencyProvider;"
 
 
 

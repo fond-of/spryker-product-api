@@ -104,6 +104,12 @@ class ProductApi extends BaseProductApi
             $data['product_concretes'] = [];
         }
         foreach ($data['product_concretes'] as $productConcrete) {
+            $idProductConcrete = $this->productFacade->findProductConcreteIdBySku($productConcrete['sku']);
+
+            if ($idProductConcrete) {
+                $productConcrete['id_product_concrete'] = $idProductConcrete;
+            }
+
             $productConcreteCollection[] = (new ProductConcreteTransfer())->fromArray($productConcrete, true);
         }
 

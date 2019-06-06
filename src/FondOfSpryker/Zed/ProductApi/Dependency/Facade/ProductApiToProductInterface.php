@@ -19,6 +19,13 @@ interface ProductApiToProductInterface extends SprykerProductApiToProductInterfa
     public function findProductAbstractIdBySku(string $skuProductAbstract);
 
     /**
+     * @param string $skuProductConcrete
+     *
+     * @return int
+     */
+    public function findProductConcreteIdBySku(string $skuProductConcrete): int;
+
+    /**
      * {@inheritdoc}
      *
      * @api

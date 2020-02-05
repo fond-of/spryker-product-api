@@ -6,7 +6,7 @@ use Spryker\Shared\Kernel\Transfer\AbstractTransfer;
 
 class ProductAbstractTransfer extends AbstractTransfer
 {
-    const ID_PRODUCT_ABSTRACT = 'idProductAbstract';
+    public const ID_PRODUCT_ABSTRACT = 'idProductAbstract';
 
     /**
      * @var array

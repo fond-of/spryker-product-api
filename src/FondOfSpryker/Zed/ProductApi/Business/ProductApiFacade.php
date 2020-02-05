@@ -11,7 +11,7 @@ use Spryker\Zed\ProductApi\Business\ProductApiFacade as BaseProductApiFacade;
 class ProductApiFacade extends BaseProductApiFacade
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @api
      *
@@ -27,12 +27,11 @@ class ProductApiFacade extends BaseProductApiFacade
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @api
      *
      * @param string $sku
-     *
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
@@ -45,7 +44,7 @@ class ProductApiFacade extends BaseProductApiFacade
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @api
      *

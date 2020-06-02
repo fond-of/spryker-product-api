@@ -3,13 +3,12 @@
 namespace FondOfSpryker\Zed\ProductApi\Business;
 
 use FondOfSpryker\Zed\ProductApi\Business\Model\ProductApi;
-use Spryker\Zed\ProductApi\Business\ProductApiBusinessFactory as BaseProductApiBusinessFactory;
+use Spryker\Zed\ProductApi\Business\ProductApiBusinessFactory as SprykerProductApiBusinessFactory;
 
 /**
- * @method \FondOfSpryker\Zed\ProductApi\ProductApiConfig getConfig()
  * @method \Spryker\Zed\ProductApi\Persistence\ProductApiQueryContainerInterface getQueryContainer()
  */
-class ProductApiBusinessFactory extends BaseProductApiBusinessFactory
+class ProductApiBusinessFactory extends SprykerProductApiBusinessFactory
 {
     /**
      * @return \Spryker\Zed\ProductApi\Business\Model\ProductApiInterface

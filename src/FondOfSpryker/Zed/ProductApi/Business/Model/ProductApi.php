@@ -2,6 +2,7 @@
 
 namespace FondOfSpryker\Zed\ProductApi\Business\Model;
 
+use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface;
 use Generated\Shared\Transfer\ApiCollectionTransfer;
 use Generated\Shared\Transfer\ApiDataTransfer;
 use Generated\Shared\Transfer\ApiItemTransfer;
@@ -11,13 +12,12 @@ use Generated\Shared\Transfer\ProductConcreteTransfer;
 use Spryker\Zed\Api\Business\Exception\EntityNotFoundException;
 use Spryker\Zed\ProductApi\Business\Mapper\EntityMapperInterface;
 use Spryker\Zed\ProductApi\Business\Mapper\TransferMapperInterface;
-use Spryker\Zed\ProductApi\Business\Model\ProductApi as BaseProductApi;
-use Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface;
+use Spryker\Zed\ProductApi\Business\Model\ProductApi as SprykerProductApi;
 use Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiInterface;
 use Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiQueryBuilderInterface;
 use Spryker\Zed\ProductApi\Persistence\ProductApiQueryContainerInterface;
 
-class ProductApi extends BaseProductApi
+class ProductApi extends SprykerProductApi
 {
     /**
      * @var \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface
@@ -174,7 +174,8 @@ class ProductApi extends BaseProductApi
         }
 
         $productConcreteCollection = [];
-        $productConcretes = $this->productFacade->getConcreteProductsByAbstractProductId($productTransfer->getIdProductAbstract());
+        $productConcretes = $this->productFacade
+            ->getConcreteProductsByAbstractProductId($productTransfer->getIdProductAbstract());
 
         foreach ($productConcretes as $productConcrete) {
             $productConcreteArray = $productConcrete->toArray();

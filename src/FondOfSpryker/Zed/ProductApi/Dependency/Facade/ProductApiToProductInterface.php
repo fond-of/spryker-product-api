@@ -8,8 +8,6 @@ use Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface as Spr
 interface ProductApiToProductInterface extends SprykerProductApiToProductInterface
 {
     /**
-     * {@inheritDoc}
-     *
      * @api
      *
      * @param string $skuProductAbstract
@@ -26,8 +24,6 @@ interface ProductApiToProductInterface extends SprykerProductApiToProductInterfa
     public function findProductConcreteIdBySku(string $skuProductConcrete): int;
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      *
      * @param string $skuProductAbstract
@@ -37,8 +33,6 @@ interface ProductApiToProductInterface extends SprykerProductApiToProductInterfa
     public function findProductAbstractBySku(string $skuProductAbstract): ?ProductAbstractTransfer;
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      *
      * @param int $idProductAbstract
@@ -48,8 +42,6 @@ interface ProductApiToProductInterface extends SprykerProductApiToProductInterfa
     public function getConcreteProductsByAbstractProductId(int $idProductAbstract): array;
 
     /**
-     * {@inheritDoc}
-     *
      * @api
      *
      * @param int $idAbstractProduct

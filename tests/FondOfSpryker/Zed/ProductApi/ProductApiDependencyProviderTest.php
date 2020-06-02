@@ -38,7 +38,6 @@ class ProductApiDependencyProviderTest extends Unit
     public function _before()
     {
         $this->containerMock = $this->getMockBuilder(Container::class)
-            ->disableOriginalConstructor()
             ->setMethods(['getLocator'])
             ->getMock();
 

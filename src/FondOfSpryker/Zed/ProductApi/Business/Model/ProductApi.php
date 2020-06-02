@@ -2,7 +2,9 @@
 
 namespace FondOfSpryker\Zed\ProductApi\Business\Model;
 
+use Generated\Shared\Transfer\ApiCollectionTransfer;
 use Generated\Shared\Transfer\ApiDataTransfer;
+use Generated\Shared\Transfer\ApiItemTransfer;
 use Generated\Shared\Transfer\ApiRequestTransfer;
 use Generated\Shared\Transfer\ProductAbstractTransfer;
 use Generated\Shared\Transfer\ProductConcreteTransfer;
@@ -53,7 +55,7 @@ class ProductApi extends BaseProductApi
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function add(ApiDataTransfer $apiDataTransfer)
+    public function add(ApiDataTransfer $apiDataTransfer): ApiItemTransfer
     {
         $data = (array)$apiDataTransfer->getData();
 
@@ -83,7 +85,7 @@ class ProductApi extends BaseProductApi
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function update($sku, ApiDataTransfer $apiDataTransfer)
+    public function update($sku, ApiDataTransfer $apiDataTransfer): ApiItemTransfer
     {
         $entityToUpdate = $this->queryContainer
             ->queryFind()
@@ -125,7 +127,7 @@ class ProductApi extends BaseProductApi
      *
      * @return \Generated\Shared\Transfer\ApiCollectionTransfer
      */
-    public function find(ApiRequestTransfer $apiRequestTransfer)
+    public function find(ApiRequestTransfer $apiRequestTransfer): ApiCollectionTransfer
     {
         $query = $this->buildQuery($apiRequestTransfer);
 
@@ -164,7 +166,7 @@ class ProductApi extends BaseProductApi
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function get($idProductAbstract)
+    public function get($idProductAbstract): ApiItemTransfer
     {
         $productTransfer = $this->productFacade->findProductAbstractById($idProductAbstract);
         if (!$productTransfer) {
@@ -173,10 +175,15 @@ class ProductApi extends BaseProductApi
 
         $productConcreteCollection = [];
         $productConcretes = $this->productFacade->getConcreteProductsByAbstractProductId($productTransfer->getIdProductAbstract());
-        if (count($productConcretes)) {
-            foreach ($productConcretes as $productConcrete) {
-                $productConcreteCollection[] = $productConcrete->toArray();
+
+        foreach ($productConcretes as $productConcrete) {
+            $productConcreteArray = $productConcrete->toArray();
+
+            foreach ($productConcreteArray['stocks'] as &$stock) {
+                $stock['quantity'] = $stock['quantity']->toInt();
             }
+
+            $productConcreteCollection[] = $productConcreteArray;
         }
 
         $productTransfer->setProductConcretes($productConcreteCollection);
@@ -191,7 +198,7 @@ class ProductApi extends BaseProductApi
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function getBySku($skuProductAbstract)
+    public function getBySku($skuProductAbstract): ApiItemTransfer
     {
         $idProductAbstract = $this->productFacade->findProductAbstractIdBySku($skuProductAbstract);
 

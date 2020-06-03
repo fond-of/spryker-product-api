@@ -4,9 +4,10 @@ namespace FondOfSprykerTest\Zed\ProductApi\Business\Model;
 
 use Codeception\Test\Unit;
 use FondOfSpryker\Zed\ProductApi\Business\Model\ProductApi;
+use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface;
+use Generated\Shared\Transfer\ProductConcreteTransfer;
 use Spryker\Zed\ProductApi\Business\Mapper\EntityMapperInterface;
 use Spryker\Zed\ProductApi\Business\Mapper\TransferMapperInterface;
-use Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface;
 use Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiInterface;
 use Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiQueryBuilderInterface;
 use Spryker\Zed\ProductApi\Persistence\ProductApiQueryContainerInterface;
@@ -64,6 +65,11 @@ class ProductApiTest extends Unit
     protected $queryContainerMock;
 
     /**
+     * @var \PHPUnit\Framework\MockObject\MockObject
+     */
+    private $productConcreteTransferMock;
+
+    /**
      * @return void
      */
     public function _before()
@@ -89,11 +95,20 @@ class ProductApiTest extends Unit
 
         $this->productAbstractTransferMock = $this->getMockBuilder('\Generated\Shared\Transfer\ProductAbstractTransfer')
             ->disableOriginalConstructor()
-            ->setMethods(['setIdProductAbstract', 'fromArray', 'setProductConcretes'])
+            ->setMethods(['setIdProductAbstract', 'fromArray', 'setProductConcretes', 'getIdProductAbstract'])
             ->getMock();
 
+        $this->productConcreteTransferMock = $this->getMockBuilder(ProductConcreteTransfer::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['toArray'])
+            ->getMock();
+
+        $this->productConcreteTransferMock
+            ->method('toArray')
+            ->willReturn(['stocks' => []]);
+
         $this->productFacadeMock = $this->getMockBuilder(ProductApiToProductInterface::class)
-            ->setMethods(['addProduct', 'get', 'getConcreteProductsByAbstractProductId', 'findProductAbstractById', 'findProductAbstractIdBySku', 'findProductAbstractBySku', 'touchProductAbstract', 'saveProduct'])
+            ->setMethods(['addProduct', 'get', 'findProductConcreteIdBySku', 'getConcreteProductsByAbstractProductId', 'findProductAbstractById', 'findProductAbstractIdBySku', 'findProductAbstractBySku', 'touchProductAbstract', 'saveProduct'])
             ->getMock();
 
         $this->spyProductAbstractQueryMock = $this->getMockBuilder('Orm\Zed\Product\Persistence\SpyProductAbstractQuery')
@@ -115,7 +130,7 @@ class ProductApiTest extends Unit
     public function testAdd()
     {
         $transferData = [
-            "sku" => "214_123",
+            'sku' => '214_123',
             'attributes' => [],
             'product_concretes' => [],
             'id_tax_set' => 1,
@@ -132,6 +147,14 @@ class ProductApiTest extends Unit
         $this->productFacadeMock->expects($this->atLeastOnce())
             ->method('findProductAbstractById')
             ->willReturn($this->productAbstractTransferMock);
+
+        $this->productFacadeMock->expects($this->atLeastOnce())
+            ->method('getConcreteProductsByAbstractProductId')
+            ->willReturn([$this->productConcreteTransferMock]);
+
+        $this->productAbstractTransferMock->expects($this->atLeastOnce())
+            ->method('getIdProductAbstract')
+            ->willReturn(1);
 
         $this->apiQueryContainerMock->expects($this->atLeastOnce())
             ->method('createApiItem')
@@ -156,9 +179,9 @@ class ProductApiTest extends Unit
      */
     public function testUpdate()
     {
-        $identifierProduct = "214_123";
+        $identifierProduct = '214_123';
         $transferData = [
-            "sku" => "214_123",
+            'sku' => '214_123',
             'attributes' => [],
             'product_concretes' => [],
             'id_tax_set' => 1,
@@ -188,6 +211,10 @@ class ProductApiTest extends Unit
             ->method('getData')
             ->willReturn($transferData);
 
+        $this->productAbstractTransferMock->expects($this->atLeastOnce())
+            ->method('getIdProductAbstract')
+            ->willReturn(1);
+
         $this->productAbstractTransferMock->expects($this->any())
             ->method('setIdProductAbstract')
             ->willReturn($this->productAbstractTransferMock);
@@ -199,6 +226,14 @@ class ProductApiTest extends Unit
         $this->productFacadeMock->expects($this->atLeastOnce())
             ->method('findProductAbstractById')
             ->willReturn($this->productAbstractTransferMock);
+
+        $this->productFacadeMock->expects($this->atLeastOnce())
+            ->method('getConcreteProductsByAbstractProductId')
+            ->willReturn([$this->productConcreteTransferMock]);
+
+        $this->productFacadeMock->expects($this->atLeastOnce())
+            ->method('saveProduct')
+            ->willReturn(1);
 
         $productApi = new ProductApi(
             $this->apiQueryContainerMock,
@@ -219,7 +254,7 @@ class ProductApiTest extends Unit
      */
     public function testUpdateWithoutEntityToUpdate()
     {
-        $sku = "214_123";
+        $sku = '214_123';
 
         $this->queryContainerMock->expects($this->atLeastOnce())
             ->method('queryFind')
@@ -264,6 +299,18 @@ class ProductApiTest extends Unit
             ->method('findProductAbstractById')
             ->willReturn($this->productAbstractTransferMock);
 
+        $this->productFacadeMock->expects($this->atLeastOnce())
+            ->method('findProductAbstractById')
+            ->willReturn($this->productAbstractTransferMock);
+
+        $this->productFacadeMock->expects($this->atLeastOnce())
+            ->method('getConcreteProductsByAbstractProductId')
+            ->willReturn([$this->productConcreteTransferMock]);
+
+        $this->productAbstractTransferMock->expects($this->atLeastOnce())
+            ->method('getIdProductAbstract')
+            ->willReturn(1);
+
         $productApi = new ProductApi(
             $this->apiQueryContainerMock,
             $this->apiQueryBuilderQueryContainerMock,
@@ -273,7 +320,7 @@ class ProductApiTest extends Unit
             $this->productFacadeMock
         );
 
-        $product = $productApi->getBySku("SKU");
+        $product = $productApi->getBySku('SKU');
 
         $this->assertInstanceOf('\Generated\Shared\Transfer\ApiItemTransfer', $product);
     }
@@ -298,6 +345,6 @@ class ProductApiTest extends Unit
             $this->productFacadeMock
         );
 
-        $productApi->getBySku("SKU");
+        $productApi->getBySku('SKU');
     }
 }

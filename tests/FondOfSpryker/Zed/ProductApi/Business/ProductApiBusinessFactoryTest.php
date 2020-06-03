@@ -5,12 +5,12 @@ namespace FondOfSprykerTest\Zed\ProductApi\Business;
 use Codeception\Test\Unit;
 use FondOfSpryker\Zed\ProductApi\Business\Model\ProductApi;
 use FondOfSpryker\Zed\ProductApi\Business\ProductApiBusinessFactory;
+use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductBridge;
 use FondOfSpryker\Zed\ProductApi\ProductApiDependencyProvider;
 use Spryker\Zed\Kernel\AbstractBundleConfig;
 use Spryker\Zed\Kernel\Container;
 use Spryker\Zed\ProductApi\Business\Mapper\EntityMapper;
 use Spryker\Zed\ProductApi\Business\Mapper\TransferMapper;
-use Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductBridge;
 use Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiBridge as QueryContainerProductApiToProductBridge;
 use Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiQueryBuilderBridge;
 use Spryker\Zed\ProductApi\Persistence\ProductApiQueryContainer;
@@ -31,7 +31,7 @@ class ProductApiBusinessFactoryTest extends Unit
      * @var \Spryker\Zed\Kernel\Container|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $containerMock;
-    
+
     /**
      * @var \Spryker\Zed\ProductApi\Business\Mapper\EntityMapper|\PHPUnit\Framework\MockObject\MockObject
      */
@@ -48,7 +48,8 @@ class ProductApiBusinessFactoryTest extends Unit
     protected $productApiQueryContainerMock;
 
     /**
-     * @var \Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductBridge|\PHPUnit\Framework\MockObject\MockObject
+     * @var \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductBridge|\PHPUnit\Framework\MockObject
+     * \MockObject
      */
     protected $productFacadeMock;
 
@@ -107,11 +108,11 @@ class ProductApiBusinessFactoryTest extends Unit
     public function testCreateProductApi()
     {
         $this->containerMock->expects($this->atLeastOnce())
-            ->method('offsetExists')
+            ->method('has')
             ->willReturn(true);
 
         $this->containerMock->expects($this->atLeastOnce())
-            ->method('offsetGet')
+            ->method('get')
             ->withConsecutive(
                 [ProductApiDependencyProvider::QUERY_CONTAINER_API],
                 [ProductApiDependencyProvider::QUERY_CONTAINER_API_QUERY_BUILDER],
@@ -129,7 +130,7 @@ class ProductApiBusinessFactoryTest extends Unit
             ->setQueryContainer($this->productApiQueryContainerMock);
 
         $productApi = $productBusinessFactory->createProductApi();
-        
+
         $this->assertInstanceOf(ProductApi::class, $productApi);
     }
 }

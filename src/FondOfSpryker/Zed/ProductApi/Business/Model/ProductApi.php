@@ -2,20 +2,22 @@
 
 namespace FondOfSpryker\Zed\ProductApi\Business\Model;
 
+use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface;
+use Generated\Shared\Transfer\ApiCollectionTransfer;
 use Generated\Shared\Transfer\ApiDataTransfer;
+use Generated\Shared\Transfer\ApiItemTransfer;
 use Generated\Shared\Transfer\ApiRequestTransfer;
 use Generated\Shared\Transfer\ProductAbstractTransfer;
 use Generated\Shared\Transfer\ProductConcreteTransfer;
 use Spryker\Zed\Api\Business\Exception\EntityNotFoundException;
 use Spryker\Zed\ProductApi\Business\Mapper\EntityMapperInterface;
 use Spryker\Zed\ProductApi\Business\Mapper\TransferMapperInterface;
-use Spryker\Zed\ProductApi\Business\Model\ProductApi as BaseProductApi;
-use Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface;
+use Spryker\Zed\ProductApi\Business\Model\ProductApi as SprykerProductApi;
 use Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiInterface;
 use Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiQueryBuilderInterface;
 use Spryker\Zed\ProductApi\Persistence\ProductApiQueryContainerInterface;
 
-class ProductApi extends BaseProductApi
+class ProductApi extends SprykerProductApi
 {
     /**
      * @var \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface
@@ -53,7 +55,7 @@ class ProductApi extends BaseProductApi
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function add(ApiDataTransfer $apiDataTransfer)
+    public function add(ApiDataTransfer $apiDataTransfer): ApiItemTransfer
     {
         $data = (array)$apiDataTransfer->getData();
 
@@ -83,7 +85,7 @@ class ProductApi extends BaseProductApi
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function update($sku, ApiDataTransfer $apiDataTransfer)
+    public function update($sku, ApiDataTransfer $apiDataTransfer): ApiItemTransfer
     {
         $entityToUpdate = $this->queryContainer
             ->queryFind()
@@ -125,7 +127,7 @@ class ProductApi extends BaseProductApi
      *
      * @return \Generated\Shared\Transfer\ApiCollectionTransfer
      */
-    public function find(ApiRequestTransfer $apiRequestTransfer)
+    public function find(ApiRequestTransfer $apiRequestTransfer): ApiCollectionTransfer
     {
         $query = $this->buildQuery($apiRequestTransfer);
 
@@ -164,7 +166,7 @@ class ProductApi extends BaseProductApi
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function get($idProductAbstract)
+    public function get($idProductAbstract): ApiItemTransfer
     {
         $productTransfer = $this->productFacade->findProductAbstractById($idProductAbstract);
         if (!$productTransfer) {
@@ -172,11 +174,17 @@ class ProductApi extends BaseProductApi
         }
 
         $productConcreteCollection = [];
-        $productConcretes = $this->productFacade->getConcreteProductsByAbstractProductId($productTransfer->getIdProductAbstract());
-        if (count($productConcretes)) {
-            foreach ($productConcretes as $productConcrete) {
-                $productConcreteCollection[] = $productConcrete->toArray();
+        $productConcretes = $this->productFacade
+            ->getConcreteProductsByAbstractProductId($productTransfer->getIdProductAbstract());
+
+        foreach ($productConcretes as $productConcrete) {
+            $productConcreteArray = $productConcrete->toArray();
+
+            foreach ($productConcreteArray['stocks'] as &$stock) {
+                $stock['quantity'] = $stock['quantity']->toInt();
             }
+
+            $productConcreteCollection[] = $productConcreteArray;
         }
 
         $productTransfer->setProductConcretes($productConcreteCollection);
@@ -191,7 +199,7 @@ class ProductApi extends BaseProductApi
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function getBySku($skuProductAbstract)
+    public function getBySku($skuProductAbstract): ApiItemTransfer
     {
         $idProductAbstract = $this->productFacade->findProductAbstractIdBySku($skuProductAbstract);
 

@@ -1,23 +1,11 @@
 {
   "name": "fond-of-spryker/product-api",
-  "description": "Extends the Base Spryker Product Api Modulegit initgit init",
+  "description": "Extends the Base Spryker Product Api Module",
   "license": "MIT",
   "authors": [
     {
-      "name": "Daniel Rose",
-      "email": "daniel-rose@gmx.de"
-    },
-    {
-      "name": "Jozsef Geng",
-      "email": "gengjozsef86@gmail.com"
-    },
-    {
-      "name": "Markus Nörenberg",
-      "email": "noerenberg.markus@gmail.com"
-    },
-    {
-      "name": "Pascal Fischer",
-      "email": "p-fischer@gmx.net"
+      "name": "FOND OF",
+      "email": "spryker@fondof.de"
     }
   ],
   "require": {
@@ -25,12 +13,14 @@
     "spryker/product-api": "^0.1"
   },
   "require-dev": {
-    "spryker/code-sniffer": "^0.14.7",
-    "spryker/development": "^3.22",
+    "spryker/code-sniffer": "^0.12",
     "codeception/codeception": "^2.5",
+    "codeception/mockery-module": "^0.2",
     "mikey179/vfsstream": "^1.6",
     "phpro/grumphp": "^0.14",
-    "sebastian/phpcpd": "^4.1"
+    "sebastian/phpcpd": "^4.0",
+    "php-coveralls/php-coveralls": "^2.1",
+    "fond-of-codeception/spryker": "dev-master"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,

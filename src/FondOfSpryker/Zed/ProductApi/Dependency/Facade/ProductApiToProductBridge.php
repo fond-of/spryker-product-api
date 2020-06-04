@@ -3,7 +3,6 @@
 namespace FondOfSpryker\Zed\ProductApi\Dependency\Facade;
 
 use Generated\Shared\Transfer\ProductAbstractTransfer;
-
 use Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductBridge as SprykerProductApiToProductBridge;
 
 class ProductApiToProductBridge extends SprykerProductApiToProductBridge implements ProductApiToProductInterface
@@ -22,7 +21,7 @@ class ProductApiToProductBridge extends SprykerProductApiToProductBridge impleme
     /**
      * @param string $skuProductAbstract
      *
-     * @return int $idProductAbstract
+     * @return int
      */
     public function findProductAbstractIdBySku(string $skuProductAbstract)
     {
@@ -56,7 +55,7 @@ class ProductApiToProductBridge extends SprykerProductApiToProductBridge impleme
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      *
      * @api
      *

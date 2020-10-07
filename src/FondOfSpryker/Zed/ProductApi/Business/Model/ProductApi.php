@@ -40,6 +40,7 @@ class ProductApi extends SprykerProductApi
      * @param \Spryker\Zed\ProductApi\Business\Mapper\EntityMapperInterface $entityMapper
      * @param \Spryker\Zed\ProductApi\Business\Mapper\TransferMapperInterface $transferMapper
      * @param \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface $productFacade
+     * @param \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreInterface $storeFacade
      */
     public function __construct(
         ProductApiToApiInterface $apiQueryContainer,

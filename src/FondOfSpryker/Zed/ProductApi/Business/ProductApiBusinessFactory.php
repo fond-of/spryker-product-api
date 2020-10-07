@@ -28,6 +28,9 @@ class ProductApiBusinessFactory extends SprykerProductApiBusinessFactory
         );
     }
 
+    /**
+     * @return \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreInterface
+     */
     public function getStoreFacade(): ProductApiToStoreInterface
     {
         return $this->getProvidedDependency(ProductApiDependencyProvider::FACADE_STORE);

@@ -71,7 +71,7 @@ class ProductApiTest extends Unit
     private $productConcreteTransferMock;
 
     /**
-     * @var ProductApiToStoreBridge|\PHPUnit\Framework\MockObject\MockObject
+     * @var \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreBridge|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $storeFacadeMock;
 

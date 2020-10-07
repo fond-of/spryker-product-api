@@ -8,6 +8,7 @@ use FondOfSpryker\Zed\ProductApi\Business\ProductApiBusinessFactory;
 use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductBridge;
 use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreBridge;
 use FondOfSpryker\Zed\ProductApi\ProductApiDependencyProvider;
+use FondOfSpryker\Zed\ProductApi\ProductApiDependencyProvider as FondOfProductApiDependencyProvider;
 use Spryker\Zed\Kernel\AbstractBundleConfig;
 use Spryker\Zed\Kernel\Container;
 use Spryker\Zed\ProductApi\Business\Mapper\EntityMapper;
@@ -15,7 +16,6 @@ use Spryker\Zed\ProductApi\Business\Mapper\TransferMapper;
 use Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiBridge as QueryContainerProductApiToProductBridge;
 use Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiQueryBuilderBridge;
 use Spryker\Zed\ProductApi\Persistence\ProductApiQueryContainer;
-use FondOfSpryker\Zed\ProductApi\ProductApiDependencyProvider as FondOfProductApiDependencyProvider;
 
 class ProductApiBusinessFactoryTest extends Unit
 {
@@ -66,7 +66,7 @@ class ProductApiBusinessFactoryTest extends Unit
     protected $vfsStreamDirectory;
 
     /**
-     * @var ProductApiToStoreBridge||\PHPUnit\Framework\MockObject\MockObject
+     * @var \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreBridge||\PHPUnit\Framework\MockObject\MockObject
      */
     protected $storeFacadeMock;
 
@@ -127,7 +127,7 @@ class ProductApiBusinessFactoryTest extends Unit
             ->withConsecutive(
                 [ProductApiDependencyProvider::QUERY_CONTAINER_API],
                 [ProductApiDependencyProvider::QUERY_CONTAINER_API_QUERY_BUILDER],
-                [ProductApiDependencyProvider::FACADE_PRODUCT]
+                [ProductApiDependencyProvider::FACADE_PRODUCT],
                 [FondOfProductApiDependencyProvider::FACADE_STORE]
             )->willReturnOnConsecutiveCalls(
                 $this->apiQueryContainerMock,

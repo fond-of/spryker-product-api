@@ -112,7 +112,7 @@ class ProductApiFacadeTest extends Unit
 
         $productApiFacade = new ProductApiFacade();
         $productApiFacade->setFactory($this->productApiBusinessFactoryMock);
-        $product = $productApiFacade->getProductAbstractBySku("SKU");
+        $product = $productApiFacade->getProductAbstractBySku('SKU');
 
         $this->assertInstanceOf('\Generated\Shared\Transfer\ApiItemTransfer', $product);
     }

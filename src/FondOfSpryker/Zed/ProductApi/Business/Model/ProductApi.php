@@ -3,12 +3,16 @@
 namespace FondOfSpryker\Zed\ProductApi\Business\Model;
 
 use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface;
+use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreInterface;
 use Generated\Shared\Transfer\ApiCollectionTransfer;
 use Generated\Shared\Transfer\ApiDataTransfer;
 use Generated\Shared\Transfer\ApiItemTransfer;
 use Generated\Shared\Transfer\ApiRequestTransfer;
 use Generated\Shared\Transfer\ProductAbstractTransfer;
 use Generated\Shared\Transfer\ProductConcreteTransfer;
+use Orm\Zed\Product\Persistence\Map\SpyProductAbstractStoreTableMap;
+use Orm\Zed\Product\Persistence\Map\SpyProductAbstractTableMap;
+use Propel\Runtime\ActiveQuery\Criteria;
 use Spryker\Zed\Api\Business\Exception\EntityNotFoundException;
 use Spryker\Zed\ProductApi\Business\Mapper\EntityMapperInterface;
 use Spryker\Zed\ProductApi\Business\Mapper\TransferMapperInterface;
@@ -25,12 +29,18 @@ class ProductApi extends SprykerProductApi
     protected $productFacade;
 
     /**
+     * @var \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreInterface
+     */
+    protected $storeFacade;
+
+    /**
      * @param \Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiInterface $apiQueryContainer
      * @param \Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiQueryBuilderInterface $apiQueryBuilderQueryContainer
      * @param \Spryker\Zed\ProductApi\Persistence\ProductApiQueryContainerInterface $queryContainer
      * @param \Spryker\Zed\ProductApi\Business\Mapper\EntityMapperInterface $entityMapper
      * @param \Spryker\Zed\ProductApi\Business\Mapper\TransferMapperInterface $transferMapper
      * @param \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface $productFacade
+     * @param \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreInterface $storeFacade
      */
     public function __construct(
         ProductApiToApiInterface $apiQueryContainer,
@@ -38,7 +48,8 @@ class ProductApi extends SprykerProductApi
         ProductApiQueryContainerInterface $queryContainer,
         EntityMapperInterface $entityMapper,
         TransferMapperInterface $transferMapper,
-        ProductApiToProductInterface $productFacade
+        ProductApiToProductInterface $productFacade,
+        ProductApiToStoreInterface $storeFacade
     ) {
         parent::__construct(
             $apiQueryContainer,
@@ -48,6 +59,8 @@ class ProductApi extends SprykerProductApi
             $transferMapper,
             $productFacade
         );
+
+        $this->storeFacade = $storeFacade;
     }
 
     /**
@@ -141,7 +154,11 @@ class ProductApi extends SprykerProductApi
         }
 
         $collection = $this->transferMapper->toTransferCollection(
-            $query->find()->toArray()
+            $query->addJoin(SpyProductAbstractTableMap::COL_ID_PRODUCT_ABSTRACT, SpyProductAbstractStoreTableMap::COL_FK_PRODUCT_ABSTRACT, Criteria::INNER_JOIN)
+            ->where(sprintf('%s = %s', SpyProductAbstractStoreTableMap::COL_FK_STORE, $this->storeFacade->getCurrentStore()->getIdStore()))
+            ->withColumn(SpyProductAbstractStoreTableMap::COL_FK_STORE, 'id_store')
+            ->find()
+            ->toArray()
         );
 
         foreach ($collection as $k => $productApiTransfer) {

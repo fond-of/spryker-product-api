@@ -3,6 +3,8 @@
 namespace FondOfSpryker\Zed\ProductApi\Business;
 
 use FondOfSpryker\Zed\ProductApi\Business\Model\ProductApi;
+use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreInterface;
+use FondOfSpryker\Zed\ProductApi\ProductApiDependencyProvider;
 use Spryker\Zed\ProductApi\Business\ProductApiBusinessFactory as SprykerProductApiBusinessFactory;
 
 /**
@@ -21,7 +23,16 @@ class ProductApiBusinessFactory extends SprykerProductApiBusinessFactory
             $this->getQueryContainer(),
             $this->createEntityMapper(),
             $this->createTransferMapper(),
-            $this->getProductFacade()
+            $this->getProductFacade(),
+            $this->getStoreFacade()
         );
+    }
+
+    /**
+     * @return \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreInterface
+     */
+    public function getStoreFacade(): ProductApiToStoreInterface
+    {
+        return $this->getProvidedDependency(ProductApiDependencyProvider::FACADE_STORE);
     }
 }

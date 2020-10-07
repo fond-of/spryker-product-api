@@ -5,6 +5,7 @@ namespace FondOfSprykerTest\Zed\ProductApi\Business\Model;
 use Codeception\Test\Unit;
 use FondOfSpryker\Zed\ProductApi\Business\Model\ProductApi;
 use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface;
+use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreBridge;
 use Generated\Shared\Transfer\ProductConcreteTransfer;
 use Spryker\Zed\ProductApi\Business\Mapper\EntityMapperInterface;
 use Spryker\Zed\ProductApi\Business\Mapper\TransferMapperInterface;
@@ -70,6 +71,11 @@ class ProductApiTest extends Unit
     private $productConcreteTransferMock;
 
     /**
+     * @var \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreBridge|\PHPUnit\Framework\MockObject\MockObject
+     */
+    protected $storeFacadeMock;
+
+    /**
      * @return void
      */
     public function _before()
@@ -122,6 +128,10 @@ class ProductApiTest extends Unit
         $this->queryContainerMock = $this->getMockBuilder(ProductApiQueryContainerInterface::class)
             ->setMethods(['queryFind', 'queryGet', 'queryRemove', 'getConnection'])
             ->getMock();
+
+        $this->storeFacadeMock = $this->getMockBuilder(ProductApiToStoreBridge::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /**
@@ -166,7 +176,8 @@ class ProductApiTest extends Unit
             $this->queryContainerMock,
             $this->entityMapperMock,
             $this->transferMapperMock,
-            $this->productFacadeMock
+            $this->productFacadeMock,
+            $this->storeFacadeMock
         );
 
         $product = $productApi->add($this->apiDataTransferMock);
@@ -241,7 +252,8 @@ class ProductApiTest extends Unit
             $this->queryContainerMock,
             $this->entityMapperMock,
             $this->transferMapperMock,
-            $this->productFacadeMock
+            $this->productFacadeMock,
+            $this->storeFacadeMock
         );
 
         $product = $productApi->update($identifierProduct, $this->apiDataTransferMock);
@@ -276,7 +288,8 @@ class ProductApiTest extends Unit
             $this->queryContainerMock,
             $this->entityMapperMock,
             $this->transferMapperMock,
-            $this->productFacadeMock
+            $this->productFacadeMock,
+            $this->storeFacadeMock
         );
 
         $productApi->update($sku, $this->apiDataTransferMock);
@@ -317,7 +330,8 @@ class ProductApiTest extends Unit
             $this->queryContainerMock,
             $this->entityMapperMock,
             $this->transferMapperMock,
-            $this->productFacadeMock
+            $this->productFacadeMock,
+            $this->storeFacadeMock
         );
 
         $product = $productApi->getBySku('SKU');
@@ -342,7 +356,8 @@ class ProductApiTest extends Unit
             $this->queryContainerMock,
             $this->entityMapperMock,
             $this->transferMapperMock,
-            $this->productFacadeMock
+            $this->productFacadeMock,
+            $this->storeFacadeMock
         );
 
         $productApi->getBySku('SKU');

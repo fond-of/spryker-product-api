@@ -77,7 +77,7 @@ class ProductApiResourcePluginTest extends Unit
         $productApiResourcePlugin = new ProductApiResourcePlugin();
         $productApiResourcePlugin->setFacade($this->productApiFacadeMock);
 
-        $product = $productApiResourcePlugin->get("SKU");
+        $product = $productApiResourcePlugin->get('SKU');
 
         $this->assertInstanceOf('\Generated\Shared\Transfer\ApiItemTransfer', $product);
     }

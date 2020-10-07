@@ -6,7 +6,9 @@ use Codeception\Test\Unit;
 use FondOfSpryker\Zed\ProductApi\Business\Model\ProductApi;
 use FondOfSpryker\Zed\ProductApi\Business\ProductApiBusinessFactory;
 use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductBridge;
+use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreBridge;
 use FondOfSpryker\Zed\ProductApi\ProductApiDependencyProvider;
+use FondOfSpryker\Zed\ProductApi\ProductApiDependencyProvider as FondOfProductApiDependencyProvider;
 use Spryker\Zed\Kernel\AbstractBundleConfig;
 use Spryker\Zed\Kernel\Container;
 use Spryker\Zed\ProductApi\Business\Mapper\EntityMapper;
@@ -64,6 +66,11 @@ class ProductApiBusinessFactoryTest extends Unit
     protected $vfsStreamDirectory;
 
     /**
+     * @var \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreBridge||\PHPUnit\Framework\MockObject\MockObject
+     */
+    protected $storeFacadeMock;
+
+    /**
      * @return void
      */
     public function _before()
@@ -100,6 +107,10 @@ class ProductApiBusinessFactoryTest extends Unit
         $this->transferMapperMock = $this->getMockBuilder(TransferMapper::class)
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->storeFacadeMock = $this->getMockBuilder(ProductApiToStoreBridge::class)
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /**
@@ -116,11 +127,13 @@ class ProductApiBusinessFactoryTest extends Unit
             ->withConsecutive(
                 [ProductApiDependencyProvider::QUERY_CONTAINER_API],
                 [ProductApiDependencyProvider::QUERY_CONTAINER_API_QUERY_BUILDER],
-                [ProductApiDependencyProvider::FACADE_PRODUCT]
+                [ProductApiDependencyProvider::FACADE_PRODUCT],
+                [FondOfProductApiDependencyProvider::FACADE_STORE]
             )->willReturnOnConsecutiveCalls(
                 $this->apiQueryContainerMock,
                 $this->productApiToApiQueryBuilderBridgeMock,
-                $this->productFacadeMock
+                $this->productFacadeMock,
+                $this->storeFacadeMock
             );
 
         $productBusinessFactory = new ProductApiBusinessFactory();

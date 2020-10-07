@@ -39,7 +39,7 @@ class ProductApiToProductBridgeTest extends Unit
     public function testAddProduct()
     {
         $this->productFacadeMock->expects($this->atLeastOnce())
-            ->method("addProduct")
+            ->method('addProduct')
             ->willReturn(1);
 
         $productApitToProductBridge = new ProductApiToProductBridge($this->productFacadeMock);
@@ -55,16 +55,16 @@ class ProductApiToProductBridgeTest extends Unit
     public function testFindProductAbstractBySku()
     {
         $this->productFacadeMock->expects($this->atLeastOnce())
-            ->method("findProductAbstractIdBySku")
-            ->willReturn("SKU");
+            ->method('findProductAbstractIdBySku')
+            ->willReturn('SKU');
 
         $this->productFacadeMock->expects($this->atLeastOnce())
-            ->method("findProductAbstractById")
+            ->method('findProductAbstractById')
             ->willReturn($this->productAbstractTransferMock);
 
         $productApitToProductBridge = new ProductApiToProductBridge($this->productFacadeMock);
 
-        $product = $productApitToProductBridge->findProductAbstractBySku("SKU");
+        $product = $productApitToProductBridge->findProductAbstractBySku('SKU');
 
         $this->assertNotNull($product);
         $this->assertInstanceOf("\Generated\Shared\Transfer\ProductAbstractTransfer", $product);
@@ -76,7 +76,7 @@ class ProductApiToProductBridgeTest extends Unit
     public function testGetConcreteProductsByAbstractProductId()
     {
          $this->productFacadeMock->expects($this->atLeastOnce())
-             ->method("getConcreteProductsByAbstractProductId")
+             ->method('getConcreteProductsByAbstractProductId')
              ->willReturn([]);
 
         $productApitToProductBridge = new ProductApiToProductBridge($this->productFacadeMock);

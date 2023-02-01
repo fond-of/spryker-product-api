@@ -2,6 +2,7 @@
 
 namespace FondOfSpryker\Zed\ProductApi\Business\Model;
 
+use Exception;
 use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface;
 use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreInterface;
 use Generated\Shared\Transfer\ApiCollectionTransfer;
@@ -17,47 +18,43 @@ use Spryker\Zed\Api\Business\Exception\EntityNotFoundException;
 use Spryker\Zed\ProductApi\Business\Mapper\EntityMapperInterface;
 use Spryker\Zed\ProductApi\Business\Mapper\TransferMapperInterface;
 use Spryker\Zed\ProductApi\Business\Model\ProductApi as SprykerProductApi;
-use Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiInterface;
+use Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToApiFacadeInterface;
+use Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface as BaseProductApiToProductInterface;
 use Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiQueryBuilderInterface;
 use Spryker\Zed\ProductApi\Persistence\ProductApiQueryContainerInterface;
 
 class ProductApi extends SprykerProductApi
 {
     /**
-     * @var \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface
-     */
-    protected $productFacade;
-
-    /**
      * @var \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreInterface
      */
     protected $storeFacade;
 
     /**
-     * @param \Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiInterface $apiQueryContainer
+     * @param \Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToApiFacadeInterface $apiFacade
      * @param \Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiQueryBuilderInterface $apiQueryBuilderQueryContainer
      * @param \Spryker\Zed\ProductApi\Persistence\ProductApiQueryContainerInterface $queryContainer
      * @param \Spryker\Zed\ProductApi\Business\Mapper\EntityMapperInterface $entityMapper
      * @param \Spryker\Zed\ProductApi\Business\Mapper\TransferMapperInterface $transferMapper
-     * @param \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface $productFacade
+     * @param \Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductInterface $productFacade
      * @param \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreInterface $storeFacade
      */
     public function __construct(
-        ProductApiToApiInterface $apiQueryContainer,
+            ProductApiToApiFacadeInterface $apiFacade,
         ProductApiToApiQueryBuilderInterface $apiQueryBuilderQueryContainer,
         ProductApiQueryContainerInterface $queryContainer,
         EntityMapperInterface $entityMapper,
         TransferMapperInterface $transferMapper,
-        ProductApiToProductInterface $productFacade,
+        BaseProductApiToProductInterface $productFacade,
         ProductApiToStoreInterface $storeFacade
     ) {
         parent::__construct(
-            $apiQueryContainer,
             $apiQueryBuilderQueryContainer,
             $queryContainer,
             $entityMapper,
             $transferMapper,
-            $productFacade
+            $productFacade,
+            $apiFacade,
         );
 
         $this->storeFacade = $storeFacade;
@@ -70,6 +67,10 @@ class ProductApi extends SprykerProductApi
      */
     public function add(ApiDataTransfer $apiDataTransfer): ApiItemTransfer
     {
+        if (!($this->productFacade instanceof ProductApiToProductInterface)) {
+            return parent::add($apiDataTransfer);
+        }
+
         $data = (array)$apiDataTransfer->getData();
 
         $productAbstractTransfer = new ProductAbstractTransfer();
@@ -85,28 +86,31 @@ class ProductApi extends SprykerProductApi
 
         $idProductAbstract = $this->productFacade->addProduct($productAbstractTransfer, $productConcreteCollection);
 
-        $this->productFacade->touchProductAbstract($idProductAbstract);
-
         return $this->get($idProductAbstract);
     }
 
     /**
-     * @param string $sku
+     * @param string|int $idProductAbstract
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
      *
      * @throws \Spryker\Zed\Api\Business\Exception\EntityNotFoundException
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function update($sku, ApiDataTransfer $apiDataTransfer): ApiItemTransfer
+    public function update($idProductAbstract, ApiDataTransfer $apiDataTransfer): ApiItemTransfer
     {
+        var_dump("wurst");
+        if (!($this->productFacade instanceof ProductApiToProductInterface) || is_int($idProductAbstract)) {
+            return parent::update($idProductAbstract, $apiDataTransfer);
+        }
+
         $entityToUpdate = $this->queryContainer
             ->queryFind()
-            ->filterBySku($sku)
+            ->filterBySku($idProductAbstract)
             ->findOne();
 
         if (!$entityToUpdate) {
-            throw new EntityNotFoundException(sprintf('Product not found: %s', $sku));
+            throw new EntityNotFoundException(sprintf('Product not found: %s', $idProductAbstract));
         }
 
         $data = (array)$apiDataTransfer->getData();
@@ -129,8 +133,6 @@ class ProductApi extends SprykerProductApi
         }
 
         $idProductAbstract = $this->productFacade->saveProduct($productAbstractTransfer, $productConcreteCollection);
-
-        $this->productFacade->touchProductAbstract($idProductAbstract);
 
         return $this->get($idProductAbstract);
     }
@@ -158,7 +160,7 @@ class ProductApi extends SprykerProductApi
             ->where(sprintf('%s = %s', SpyProductAbstractStoreTableMap::COL_FK_STORE, $this->storeFacade->getCurrentStore()->getIdStore()))
             ->withColumn(SpyProductAbstractStoreTableMap::COL_FK_STORE, 'id_store')
             ->find()
-            ->toArray()
+            ->toArray(),
         );
 
         foreach ($collection as $k => $productApiTransfer) {
@@ -169,7 +171,7 @@ class ProductApi extends SprykerProductApi
             }
         }
 
-        $apiCollectionTransfer = $this->apiQueryContainer->createApiCollection($collection);
+        $apiCollectionTransfer = $this->apiFacade->createApiCollection($collection);
 
         $apiCollectionTransfer = $this->addPagination($query, $apiCollectionTransfer, $apiRequestTransfer);
 
@@ -185,6 +187,10 @@ class ProductApi extends SprykerProductApi
      */
     public function get($idProductAbstract): ApiItemTransfer
     {
+        if (!($this->productFacade instanceof ProductApiToProductInterface)) {
+            return parent::get($idProductAbstract);
+        }
+
         $productTransfer = $this->productFacade->findProductAbstractById($idProductAbstract);
         if (!$productTransfer) {
             throw new EntityNotFoundException(sprintf('Product Abstract not found for id %s', $idProductAbstract));
@@ -206,18 +212,23 @@ class ProductApi extends SprykerProductApi
 
         $productTransfer->setProductConcretes($productConcreteCollection);
 
-        return $this->apiQueryContainer->createApiItem($productTransfer, $idProductAbstract);
+        return $this->apiFacade->createApiItem($productTransfer, (string)$idProductAbstract);
     }
 
     /**
      * @param string $skuProductAbstract
      *
      * @throws \Spryker\Zed\Api\Business\Exception\EntityNotFoundException
+     * @throws \Exception
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
     public function getBySku($skuProductAbstract): ApiItemTransfer
     {
+        if (!($this->productFacade instanceof ProductApiToProductInterface)) {
+            throw new Exception(sprintf('Product facade is not an instance of "%s"', ProductApiToProductInterface::class));
+        }
+
         $idProductAbstract = $this->productFacade->findProductAbstractIdBySku($skuProductAbstract);
 
         if (!$idProductAbstract) {

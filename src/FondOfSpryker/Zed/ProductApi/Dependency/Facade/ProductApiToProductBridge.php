@@ -8,24 +8,13 @@ use Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductBridge as Spryke
 class ProductApiToProductBridge extends SprykerProductApiToProductBridge implements ProductApiToProductInterface
 {
     /**
-     * @param \Generated\Shared\Transfer\ProductAbstractTransfer $productAbstractTransfer
-     * @param array $productConcreteCollection
+     * @param string $sku
      *
-     * @return int
+     * @return int|null
      */
-    public function addProduct(ProductAbstractTransfer $productAbstractTransfer, array $productConcreteCollection)
+    public function findProductAbstractIdBySku($sku)
     {
-        return $this->productFacade->addProduct($productAbstractTransfer, $productConcreteCollection);
-    }
-
-    /**
-     * @param string $skuProductAbstract
-     *
-     * @return int $idProductAbstract
-     */
-    public function findProductAbstractIdBySku(string $skuProductAbstract)
-    {
-        return $this->productFacade->findProductAbstractIdBySku($skuProductAbstract);
+        return $this->productFacade->findProductAbstractIdBySku($sku);
     }
 
     /**
@@ -61,20 +50,10 @@ class ProductApiToProductBridge extends SprykerProductApiToProductBridge impleme
      *
      * @param int $idProductAbstract
      *
-     * @return \Generated\Shared\Transfer\ProductConcreteTransfer[]
+     * @return array<\Generated\Shared\Transfer\ProductConcreteTransfer>
      */
     public function getConcreteProductsByAbstractProductId(int $idProductAbstract): array
     {
         return $this->productFacade->getConcreteProductsByAbstractProductId($idProductAbstract);
-    }
-
-    /**
-     * @param int $idAbstractProduct
-     *
-     * @return void
-     */
-    public function touchProductAbstract(int $idAbstractProduct): void
-    {
-        $this->productFacade->touchProductAbstract($idAbstractProduct);
     }
 }

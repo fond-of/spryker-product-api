@@ -9,6 +9,7 @@ use Spryker\Zed\ProductApi\Business\ProductApiBusinessFactory as SprykerProductA
 
 /**
  * @method \Spryker\Zed\ProductApi\Persistence\ProductApiQueryContainerInterface getQueryContainer()
+ * @method \Spryker\Zed\ProductApi\ProductApiConfig getConfig()
  */
 class ProductApiBusinessFactory extends SprykerProductApiBusinessFactory
 {
@@ -18,13 +19,13 @@ class ProductApiBusinessFactory extends SprykerProductApiBusinessFactory
     public function createProductApi()
     {
         return new ProductApi(
-            $this->getApiQueryContainer(),
+            $this->getApiFacade(),
             $this->getApiQueryBuilderQueryContainer(),
             $this->getQueryContainer(),
             $this->createEntityMapper(),
             $this->createTransferMapper(),
             $this->getProductFacade(),
-            $this->getStoreFacade()
+            $this->getStoreFacade(),
         );
     }
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace FondOfSprykerTest\Zed\ProductApi;
+namespace FondOfSpryker\Zed\ProductApi\Dependency\Facade;
 
 use Codeception\Test\Unit;
-use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductBridge;
+use Generated\Shared\Transfer\ProductAbstractTransfer;
 use Spryker\Zed\Product\Business\ProductFacade;
 
 class ProductApiToProductBridgeTest extends Unit
@@ -11,7 +11,7 @@ class ProductApiToProductBridgeTest extends Unit
     /**
      * @var \Spryker\Zed\Product\Business\ProductFacade|\PHPUnit\Framework\MockObject\MockObject|null
      */
-    protected $productFacadeMock;
+    protected $facadeMock;
 
     /**
      * @var \Generated\Shared\Transfer\ProductAbstractTransfer
@@ -19,69 +19,84 @@ class ProductApiToProductBridgeTest extends Unit
     protected $productAbstractTransferMock;
 
     /**
+     * @var \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductBridge
+     */
+    protected $bridge;
+
+    /**
      * @return void
      */
-    public function _before()
+    public function _before(): void
     {
-        $this->productAbstractTransferMock = $this->getMockBuilder("\Generated\Shared\Transfer\ProductAbstractTransfer")
+        $this->productAbstractTransferMock = $this->getMockBuilder(ProductAbstractTransfer::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->productFacadeMock = $this->getMockBuilder(ProductFacade::class)
+        $this->facadeMock = $this->getMockBuilder(ProductFacade::class)
             ->disableOriginalConstructor()
-            ->setMethods(['addProduct', 'getConcreteProductsByAbstractProductId', 'findProductAbstractIdBySku', 'findProductAbstractById'])
             ->getMock();
+
+        $this->bridge = new ProductApiToProductBridge($this->facadeMock);
     }
 
     /**
      * @return void
      */
-    public function testAddProduct()
+    public function testAddProduct(): void
     {
-        $this->productFacadeMock->expects($this->atLeastOnce())
+        $idProductAbstract = 1;
+
+        $this->facadeMock->expects(static::atLeastOnce())
             ->method('addProduct')
-            ->willReturn(1);
+            ->with($this->productAbstractTransferMock, [])
+            ->willReturn($idProductAbstract);
 
-        $productApitToProductBridge = new ProductApiToProductBridge($this->productFacadeMock);
-        $idProductAbstract = $productApitToProductBridge->addProduct($this->productAbstractTransferMock, []);
-
-        $this->assertTrue(is_int($idProductAbstract));
-        $this->assertEquals(1, $idProductAbstract);
+        static::assertEquals(
+            $idProductAbstract,
+            $this->bridge->addProduct($this->productAbstractTransferMock, []),
+        );
     }
 
     /**
      * @return void
      */
-    public function testFindProductAbstractBySku()
+    public function testFindProductAbstractBySku(): void
     {
-        $this->productFacadeMock->expects($this->atLeastOnce())
-            ->method('findProductAbstractIdBySku')
-            ->willReturn('SKU');
+        $idProductAbstract = 1;
+        $sku = '1234_1234';
 
-        $this->productFacadeMock->expects($this->atLeastOnce())
+        $this->facadeMock->expects(static::atLeastOnce())
+            ->method('findProductAbstractIdBySku')
+            ->with($sku)
+            ->willReturn($idProductAbstract);
+
+        $this->facadeMock->expects(static::atLeastOnce())
             ->method('findProductAbstractById')
+            ->with($idProductAbstract)
             ->willReturn($this->productAbstractTransferMock);
 
-        $productApitToProductBridge = new ProductApiToProductBridge($this->productFacadeMock);
-
-        $product = $productApitToProductBridge->findProductAbstractBySku('SKU');
-
-        $this->assertNotNull($product);
-        $this->assertInstanceOf("\Generated\Shared\Transfer\ProductAbstractTransfer", $product);
+        static::assertEquals(
+            $this->productAbstractTransferMock,
+            $this->bridge->findProductAbstractBySku($sku),
+        );
     }
 
     /**
      * @return void
      */
-    public function testGetConcreteProductsByAbstractProductId()
+    public function testGetConcreteProductsByAbstractProductId(): void
     {
-         $this->productFacadeMock->expects($this->atLeastOnce())
+        $idProductAbstract = 1;
+        $concreteProducts = [];
+
+         $this->facadeMock->expects(static::atLeastOnce())
              ->method('getConcreteProductsByAbstractProductId')
-             ->willReturn([]);
+             ->with($idProductAbstract)
+             ->willReturn($concreteProducts);
 
-        $productApitToProductBridge = new ProductApiToProductBridge($this->productFacadeMock);
-        $productConcreteTransferObjects = $productApitToProductBridge->getConcreteProductsByAbstractProductId(1);
-
-        $this->assertTrue(is_array($productConcreteTransferObjects));
+        static::assertEquals(
+            $concreteProducts,
+            $this->bridge->getConcreteProductsByAbstractProductId($idProductAbstract),
+        );
     }
 }

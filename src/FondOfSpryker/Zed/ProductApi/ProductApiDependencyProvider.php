@@ -7,8 +7,14 @@ use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreBridge;
 use Spryker\Zed\Kernel\Container;
 use Spryker\Zed\ProductApi\ProductApiDependencyProvider as SprykerProductApiDependencyProvider;
 
+/**
+ * @codeCoverageIgnore
+ */
 class ProductApiDependencyProvider extends SprykerProductApiDependencyProvider
 {
+    /**
+     * @var string
+     */
     public const FACADE_STORE = 'FACADE_STORE';
 
     /**
@@ -20,9 +26,7 @@ class ProductApiDependencyProvider extends SprykerProductApiDependencyProvider
     {
         $container = parent::provideBusinessLayerDependencies($container);
 
-        $container = $this->addStoreFacade($container);
-
-        return $container;
+        return $this->addStoreFacade($container);
     }
 
     /**
@@ -30,9 +34,9 @@ class ProductApiDependencyProvider extends SprykerProductApiDependencyProvider
      *
      * @return \Spryker\Zed\Kernel\Container
      */
-    protected function provideProductFacade(Container $container): Container
+    protected function addProductFacade(Container $container): Container
     {
-        $container[static::FACADE_PRODUCT] = function (Container $container) {
+        $container[static::FACADE_PRODUCT] = static function (Container $container) {
             return new ProductApiToProductBridge($container->getLocator()->product()->facade());
         };
 

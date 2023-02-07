@@ -1,29 +1,30 @@
-.PHONY: phpcs phpstan codeception test install install-dev bundle docker-tag docker-login docker-push docker-build grumphp update
-
+.PHONY: update
 update:
 	composer update
 
+.PHONY: install
 install:
 	composer install --no-dev
 
+.PHONY: install-dev
 install-dev:
 	composer install
 
+.PHONY: phpcs
 phpcs:
-	./vendor/bin/phpcs --standard=./vendor/squizlabs/php_codesniffer/src/Standards/PSR12/ruleset.xml ./src/
+	./vendor/bin/phpcs --standard=./vendor/spryker/code-sniffer/Spryker/ruleset.xml ./src/FondOfSpryker/ ./tests/FondOfSpryker/
 
+.PHONY: phpcbf
+phpcbf:
+	./vendor/bin/phpcbf --standard=./vendor/spryker/code-sniffer/Spryker/ruleset.xml ./src/FondOfSpryker/ ./tests/FondOfSpryker/
+
+.PHONY: phpstan
 phpstan:
-	./vendor/bin/phpstan analyse -l 4 ./src
+	php -d memory_limit=-1 ./vendor/bin/phpstan analyse -l 4 ./src/FondOfSpryker
 
+.PHONY: codeception
 codeception:
-	./vendor/bin/codecept run --coverage --coverage-xml --coverage-html
+	./vendor/bin/codecept run --env standalone --coverage --coverage-xml --coverage-html
 
-phpmd:
-	./vendor/bin/phpmd ./src xml cleancode,codesize,controversial,design --exclude DandelionServiceProvider,Git
-
-phpcpd:
-	./vendor/bin/phpcpd ./src
-
-grumphp: phpcs phpstan codeception phpmd phpcpd
-
-test: install-dev phpcs phpstan codeception phpmd phpcpd
+.PHONY: ci
+ci: install-dev phpcs codeception phpstan

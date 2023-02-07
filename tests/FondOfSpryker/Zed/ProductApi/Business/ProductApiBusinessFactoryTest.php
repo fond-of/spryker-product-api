@@ -1,28 +1,26 @@
 <?php
 
-namespace FondOfSprykerTest\Zed\ProductApi\Business;
+namespace FondOfSpryker\Zed\ProductApi\Business;
 
 use Codeception\Test\Unit;
 use FondOfSpryker\Zed\ProductApi\Business\Model\ProductApi;
-use FondOfSpryker\Zed\ProductApi\Business\ProductApiBusinessFactory;
 use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductBridge;
 use FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreBridge;
 use FondOfSpryker\Zed\ProductApi\ProductApiDependencyProvider;
-use FondOfSpryker\Zed\ProductApi\ProductApiDependencyProvider as FondOfProductApiDependencyProvider;
 use Spryker\Zed\Kernel\AbstractBundleConfig;
 use Spryker\Zed\Kernel\Container;
 use Spryker\Zed\ProductApi\Business\Mapper\EntityMapper;
 use Spryker\Zed\ProductApi\Business\Mapper\TransferMapper;
-use Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiBridge as QueryContainerProductApiToProductBridge;
+use Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToApiFacadeInterface;
 use Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiQueryBuilderBridge;
 use Spryker\Zed\ProductApi\Persistence\ProductApiQueryContainer;
 
 class ProductApiBusinessFactoryTest extends Unit
 {
     /**
-     * @var \Spryker\Zed\ProductApi\Dependency\QueryContainer\ProductApiToApiBridge|\PHPUnit\Framework\MockObject\MockObject
+     * @var \Spryker\Zed\ProductApi\Dependency\Facade\ProductApiToApiFacadeInterface|\PHPUnit\Framework\MockObject\MockObject
      */
-    protected $apiQueryContainerMock;
+    protected $apiFacadeMock;
 
     /**
      * @var \Spryker\Zed\Kernel\AbstractBundleConfig|\PHPUnit\Framework\MockObject\MockObject
@@ -50,7 +48,7 @@ class ProductApiBusinessFactoryTest extends Unit
     protected $productApiQueryContainerMock;
 
     /**
-     * @var \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductBridge|\PHPUnit\Framework\MockObject
+     * @var \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToProductBridge|\PHPUnit\Framework\MockObject\MockObject
      * \MockObject
      */
     protected $productFacadeMock;
@@ -61,26 +59,25 @@ class ProductApiBusinessFactoryTest extends Unit
     protected $transferMapperMock;
 
     /**
-     * @var \org\bovigo\vfs\vfsStreamDirectory
-     */
-    protected $vfsStreamDirectory;
-
-    /**
-     * @var \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreBridge||\PHPUnit\Framework\MockObject\MockObject
+     * @var \FondOfSpryker\Zed\ProductApi\Dependency\Facade\ProductApiToStoreBridge|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $storeFacadeMock;
 
     /**
+     * @var \FondOfSpryker\Zed\ProductApi\Business\ProductApiBusinessFactory
+     */
+    protected $factory;
+
+    /**
      * @return void
      */
-    public function _before()
+    public function _before(): void
     {
         $this->configMock = $this->getMockBuilder(AbstractBundleConfig::class)
             ->disableOriginalConstructor()
-            ->setMethods(['get'])
             ->getMock();
 
-        $this->apiQueryContainerMock = $this->getMockBuilder(QueryContainerProductApiToProductBridge::class)
+        $this->apiFacadeMock = $this->getMockBuilder(ProductApiToApiFacadeInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -111,39 +108,40 @@ class ProductApiBusinessFactoryTest extends Unit
         $this->storeFacadeMock = $this->getMockBuilder(ProductApiToStoreBridge::class)
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->factory = new ProductApiBusinessFactory();
+
+        $this->factory->setConfig($this->configMock);
+        $this->factory->setContainer($this->containerMock);
+        $this->factory->setQueryContainer($this->productApiQueryContainerMock);
     }
 
     /**
      * @return void
      */
-    public function testCreateProductApi()
+    public function testCreateProductApi(): void
     {
-        $this->containerMock->expects($this->atLeastOnce())
+        $this->containerMock->expects(static::atLeastOnce())
             ->method('has')
             ->willReturn(true);
 
-        $this->containerMock->expects($this->atLeastOnce())
+        $this->containerMock->expects(static::atLeastOnce())
             ->method('get')
             ->withConsecutive(
-                [ProductApiDependencyProvider::QUERY_CONTAINER_API],
+                [ProductApiDependencyProvider::FACADE_API],
                 [ProductApiDependencyProvider::QUERY_CONTAINER_API_QUERY_BUILDER],
                 [ProductApiDependencyProvider::FACADE_PRODUCT],
-                [FondOfProductApiDependencyProvider::FACADE_STORE]
+                [ProductApiDependencyProvider::FACADE_STORE],
             )->willReturnOnConsecutiveCalls(
-                $this->apiQueryContainerMock,
+                $this->apiFacadeMock,
                 $this->productApiToApiQueryBuilderBridgeMock,
                 $this->productFacadeMock,
-                $this->storeFacadeMock
+                $this->storeFacadeMock,
             );
 
-        $productBusinessFactory = new ProductApiBusinessFactory();
-        $productBusinessFactory
-            ->setConfig($this->configMock)
-            ->setContainer($this->containerMock)
-            ->setQueryContainer($this->productApiQueryContainerMock);
-
-        $productApi = $productBusinessFactory->createProductApi();
-
-        $this->assertInstanceOf(ProductApi::class, $productApi);
+        static::assertInstanceOf(
+            ProductApi::class,
+            $this->factory->createProductApi(),
+        );
     }
 }

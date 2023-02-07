@@ -2,11 +2,12 @@
 
 namespace FondOfSpryker\Zed\ProductApi\Business;
 
+use FondOfSpryker\Zed\ProductApi\Business\Model\ProductApi;
 use Generated\Shared\Transfer\ApiDataTransfer;
 use Spryker\Zed\ProductApi\Business\ProductApiFacade as BaseProductApiFacade;
 
 /**
- * @method \FondOfSpryker\Zed\ProductApi\Business\ProductApiBusinessFactory getFactory()
+ * @method \Spryker\Zed\ProductApi\Business\ProductApiBusinessFactory getFactory()
  */
 class ProductApiFacade extends BaseProductApiFacade
 {
@@ -31,16 +32,16 @@ class ProductApiFacade extends BaseProductApiFacade
      *
      * @api
      *
-     * @param string $sku
+     * @param string|int $idProductAbstract
      * @param \Generated\Shared\Transfer\ApiDataTransfer $apiDataTransfer
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function updateProduct($sku, ApiDataTransfer $apiDataTransfer)
+    public function updateProduct($idProductAbstract, ApiDataTransfer $apiDataTransfer)
     {
         return $this->getFactory()
             ->createProductApi()
-            ->update($sku, $apiDataTransfer);
+            ->update($idProductAbstract, $apiDataTransfer);
     }
 
     /**
@@ -48,15 +49,19 @@ class ProductApiFacade extends BaseProductApiFacade
      *
      * @api
      *
-     * @param string $sku
-     * @param \Generated\Shared\Transfer\ApiFilterTransfer $apiFilterTransfer
+     * @param string|int $idProductAbstract
      *
      * @return \Generated\Shared\Transfer\ApiItemTransfer
      */
-    public function getProductAbstractBySku($sku)
+    public function getProduct($idProductAbstract)
     {
-        return $this->getFactory()
-            ->createProductApi()
-            ->getBySku($sku);
+        $productApi = $this->getFactory()
+            ->createProductApi();
+
+        if (!is_int($idProductAbstract) && $productApi instanceof ProductApi) {
+            return $productApi->getBySku($idProductAbstract);
+        }
+
+        return $productApi->get($idProductAbstract);
     }
 }

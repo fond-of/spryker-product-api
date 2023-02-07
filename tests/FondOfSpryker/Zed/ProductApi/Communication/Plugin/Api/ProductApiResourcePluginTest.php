@@ -1,10 +1,11 @@
 <?php
 
-namespace FondOfSprykerTest\Zed\ProductApi\Communication\Plugin\Api;
+namespace FondOfSpryker\Zed\ProductApi\Communication\Plugin\Api;
 
 use Codeception\Test\Unit;
 use FondOfSpryker\Zed\ProductApi\Business\ProductApiFacade;
-use FondOfSpryker\Zed\ProductApi\Communication\Plugin\Api\ProductApiResourcePlugin;
+use Generated\Shared\Transfer\ApiDataTransfer;
+use Generated\Shared\Transfer\ApiItemTransfer;
 
 class ProductApiResourcePluginTest extends Unit
 {
@@ -19,66 +20,66 @@ class ProductApiResourcePluginTest extends Unit
     protected $apiItemTransferMock;
 
     /**
-     * @var \FondOfSpryker\Zed\ProductApi\Business\ProductApiFacadeInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var \FondOfSpryker\Zed\ProductApi\Business\ProductApiFacade|\PHPUnit\Framework\MockObject\MockObject
      */
     protected $productApiFacadeMock;
 
     /**
-     * @var \FondOfSpryker\Zed\ProductApi\Communication\Plugin\Api\ProductApiResourcePlugin|\PHPUnit\Framework\MockObject\MockObject
+     * @var \FondOfSpryker\Zed\ProductApi\Communication\Plugin\Api\ProductApiResourcePlugin
      */
-    protected $productApiResourcePlugin;
+    protected $plugin;
 
     /**
      * @return void
      */
-    public function _before()
+    public function _before(): void
     {
-        $this->apiDataTransferMock = $this->getMockBuilder('\Generated\Shared\Transfer\ApiDataTransfer')
+        $this->apiDataTransferMock = $this->getMockBuilder(ApiDataTransfer::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->apiItemTransferMock = $this->getMockBuilder('\Generated\Shared\Transfer\ApiItemTransfer')
+        $this->apiItemTransferMock = $this->getMockBuilder(ApiItemTransfer::class)
             ->disableOriginalConstructor()
             ->getMock();
 
         $this->productApiFacadeMock = $this->getMockBuilder(ProductApiFacade::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getProductAbstractBySku', 'updateProduct'])
             ->getMock();
+
+        $this->plugin = new ProductApiResourcePlugin();
+        $this->plugin->setFacade($this->productApiFacadeMock);
     }
 
     /**
      * @return void
      */
-    public function testUpdate()
+    public function testUpdate(): void
     {
-        $skuProductAbstract = '214_123';
+        $sku = '214_123';
 
         $this->productApiFacadeMock->expects($this->atLeastOnce())
             ->method('updateProduct')
+            ->with($sku, $this->apiDataTransferMock)
             ->willReturn($this->apiItemTransferMock);
 
-        $productApiResourcePlugin = new ProductApiResourcePlugin();
-        $productApiResourcePlugin->setFacade($this->productApiFacadeMock);
-        $product = $productApiResourcePlugin->update($skuProductAbstract, $this->apiDataTransferMock);
-
-        $this->assertInstanceOf('\Generated\Shared\Transfer\ApiItemTransfer', $product);
+        static::assertEquals(
+            $this->apiItemTransferMock,
+            $this->plugin->update($sku, $this->apiDataTransferMock),
+        );
     }
 
     /**
      * @return void
      */
-    public function testGet()
+    public function testGet(): void
     {
+        $sku = '214_123';
+
         $this->productApiFacadeMock->expects($this->atLeastOnce())
-            ->method('getProductAbstractBySku')
+            ->method('getProduct')
+            ->with($sku)
             ->willReturn($this->apiItemTransferMock);
 
-        $productApiResourcePlugin = new ProductApiResourcePlugin();
-        $productApiResourcePlugin->setFacade($this->productApiFacadeMock);
-
-        $product = $productApiResourcePlugin->get('SKU');
-
-        $this->assertInstanceOf('\Generated\Shared\Transfer\ApiItemTransfer', $product);
+        static::assertEquals($this->apiItemTransferMock, $this->plugin->get($sku));
     }
 }

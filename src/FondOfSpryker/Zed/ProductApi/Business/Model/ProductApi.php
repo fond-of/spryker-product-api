@@ -99,7 +99,6 @@ class ProductApi extends SprykerProductApi
      */
     public function update($idProductAbstract, ApiDataTransfer $apiDataTransfer): ApiItemTransfer
     {
-        var_dump("wurst");
         if (!($this->productFacade instanceof ProductApiToProductInterface) || is_int($idProductAbstract)) {
             return parent::update($idProductAbstract, $apiDataTransfer);
         }
@@ -171,7 +170,7 @@ class ProductApi extends SprykerProductApi
             }
         }
 
-        $apiCollectionTransfer = $this->apiFacade->createApiCollection($collection);
+        $apiCollectionTransfer = $this->apiFacade->createApiCollection([])->setData($collection);
 
         $apiCollectionTransfer = $this->addPagination($query, $apiCollectionTransfer, $apiRequestTransfer);
 
